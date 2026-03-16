@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.kh.world.message.model.mapper.MessageMapper">
+
+	<sql id="selectMemberSql">
+		 SELECT USER_NO,
+				USER_ID,
+				USER_PWD,
+				NAME,
+				ROLE,
+				PHONE,
+				EMAIL,
+				BIRTH,
+				ADDRESS,
+				SEARCH_ME,
+				GENDER,
+				MINIMI,
+				CREATE_DATE,
+				ACORN,
+				STATUS
+		FROM MEMBER 
+	</sql>
+	
+	<sql id="selectRequestSql">
+		 SELECT REQ_NO,
+		 		REQ_SENDER_NO,
+		 		REQ_RECEIVER_NO,
+		 		REQ_ILCHON_NICK,
+		 		REQ_TITLE,
+		 		REQ_CONTENT,
+		 		REQ_DATE,
+		 		REQ_STATUS
+		FROM REQUEST
+	</sql>
+	
+	
+	<sql id="selectIlchonSql">
+		 SELECT ILCHON_IDX,
+				USER_NO,
+				ILCHON_NO,
+				ILCHON_NICK,
+				ILCHON_CATE,
+				ILCHON_STATUS
+		FROM ILCHON
+	</sql>
+	
+	<sql id="selectMessageSql">
+		 SELECT M_NO,
+				M_USER_NO,
+				M_ILCHON_NO,
+				M_TITLE,
+				M_CONTENT,
+				M_SEND_DATE,
+				M_READ_DATE,
+				M_READ,
+				M_STATUS
+		FROM MESSAGE
+	</sql>
+	
+	<sql id="selectAnswerSql">
+		 SELECT A_NO,
+		 		M_NO,
+				A_SENDER_NO,
+				A_RECEIVER_NO,
+				A_ANSWER_CONTENT,
+				A_ANSWER_DATE,
+				A_STATUS
+		FROM MESSAGE_ANSWER
+	</sql>
+	
+
+	
+	<resultMap id="memberResultMap" type="Member">
+		<id property="no" column="USER_NO"/>
+		<result property="id" column="USER_ID"/>
+		<result property="password" column="USER_PWD"/>
+		<result property="name" column="NAME"/>
+		<result property="role" column="ROLE"/>
+		<result property="phone" column="PHONE"/>
+		<result property="email" column="EMAIL"/>
+		<result property="birth" column="BIRTH"/>
+		<result property="address" column="ADDRESS"/>
+		<result property="searchMe" column="SEARCH_ME"/>
+		<result property="gender" column="GENDER"/>
+		<result property="minimi" column="MINIMI"/>
+		<result property="createDate" column="CREATE_DATE"/>
+		<result property="acorn" column="ACORN"/>
+		<result property="status" column="STATUS"/>
+	</resultMap>
+	
+	<resultMap id="requestResultMap" type="Request">
+		<id property="requestNo" column="REQ_NO"/>
+		<result property="sender" column="REQ_SENDER_NO"/>
+		<result property="receiver" column="REQ_RECEIVER_NO"/>
+		<result property="ilchonNick" column="REQ_ILCHON_NICK"/>
+		<result property="requestTitle" column="REQ_TITLE"/>
+		<result property="requestContent" column="REQ_CONTENT"/>
+		<result property="requestDate" column="REQ_DATE"/>
+		<result property="requestStatus" column="REQ_STATUS"/>
+	</resultMap>
+	
+	<resultMap id="IlchonResultMap" type="Ilchon">
+		<id property="indexNo" column="ILCHON_IDX"/>
+		<result property="userNo" column="USER_NO"/>
+		<result property="ilchonNo" column="ILCHON_NO"/>
+		<result property="ilchonNick" column="ILCHON_NICK"/>
+		<result property="ilchonCate" column="ILCHON_CATE"/>
+		<result property="ilchonStatus" column="ILCHON_STATUS"/>
+	</resultMap>
+	
+	<resultMap id="IlchonMemberResultMap" type="Ilchon">
+		<id property="indexNo" column="ILCHON_IDX"/>
+		<result property="ilchonNo" column="ILCHON_NO"/>
+		<result property="ilchonNick" column="ILCHON_NICK"/>
+		<result property="ilchonCate" column="ILCHON_CATE"/>
+		<result property="ilchonStatus" column="ILCHON_STATUS"/>
+		<association property="member" resultMap="memberResultMap"/>
+	</resultMap>
+	
+	<resultMap id="MemberIlchonResultMap" type="Member">
+		<id property="no" column="USER_NO"/>
+		<result property="id" column="USER_ID"/>
+		<result property="password" column="USER_PWD"/>
+		<result property="name" column="NAME"/>
+		<result property="role" column="ROLE"/>
+		<result property="phone" column="PHONE"/>
+		<result property="email" column="EMAIL"/>
+		<result property="birth" column="BIRTH"/>
+		<result property="address" column="ADDRESS"/>
+		<result property="searchMe" column="SEARCH_ME"/>
+		<result property="gender" column="GENDER"/>
+		<result property="minimi" column="MINIMI"/>
+		<result property="createDate" column="CREATE_DATE"/>
+		<result property="acorn" column="ACORN"/>
+		<result property="status" column="STATUS"/>
+		<association property="ilchon" resultMap="IlchonResultMap"/>
+	</resultMap>
+	
+	<resultMap id="MessageResultMap" type="Message">
+		<id property="messageNo" column="M_NO"/>
+		<result property="userNo" column="M_USER_NO"/>
+		<result property="ilchonNo" column="M_ILCHON_NO"/>
+		<result property="messageTitle" column="M_TITLE"/>
+		<result property="messageContnet" column="M_CONTENT"/>
+		<result property="sendDate" column="M_SEND_DATE"/>
+		<result property="readDate" column="M_READ_DATE"/>
+		<result property="read" column="M_READ"/>
+		<result property="status" column="M_STATUS"/>
+		<association property="ilchon" resultMap="IlchonResultMap"/>
+		<collection property="answers" javaType="arraylist" columnPrefix="A_" resultMap="AnswerResultMap" />
+	</resultMap>
+	
+	<resultMap id="MessageMemberResultMap" type="Message">
+		<id property="messageNo" column="M_NO"/>
+		<result property="userNo" column="M_USER_NO"/>
+		<result property="ilchonNo" column="M_ILCHON_NO"/>
+		<result property="messageTitle" column="M_TITLE"/>
+		<result property="messageContnet" column="M_CONTENT"/>
+		<result property="sendDate" column="M_SEND_DATE"/>
+		<result property="readDate" column="M_READ_DATE"/>
+		<result property="read" column="M_READ"/>
+		<result property="status" column="M_STATUS"/>
+		<association property="member" resultMap="memberResultMap"/>
+		<collection property="answers" javaType="arraylist" columnPrefix="A_" resultMap="AnswerResultMap" />
+	</resultMap>
+	
+	<resultMap id="AnswerResultMap" type="Answer">
+		<id property="answerNo" column="A_NO"/>
+		<result property="messageNo" column="M_NO"/>
+		<result property="sender" column="A_SENDER_NO"/>
+		<result property="receiver" column="A_RECEIVER_NO"/>
+		<result property="answerContnet" column="A_ANSWER_CONTENT"/>
+		<result property="answerDate" column="A_ANSWER_DATE"/>
+		<result property="status" column="A_STATUS"/>
+		<association property="Message" resultMap="MessageResultMap"/>
+	</resultMap>
+
+
+	<!-- 나의 일촌 목록 조회 -->
+	<select id="findIlchonByNo" resultMap="IlchonMemberResultMap">
+		SELECT i.ILCHON_IDX,
+		       m.USER_NO,
+		       i.ILCHON_NO,
+		       i.ILCHON_NICK,
+		       i.ILCHON_CATE,
+		       i.ILCHON_STATUS,
+		       m.USER_ID,
+		       m.USER_PWD,
+		       m.NAME,
+		       m.ROLE,
+		       m.PHONE,
+		       m.EMAIL,
+		       m.BIRTH,
+		       m.ADDRESS,
+		       m.SEARCH_ME,
+		       m.GENDER,
+		       m.MINIMI,
+		       m.CREATE_DATE,
+		       m.ACORN,
+		       m.STATUS
+		FROM ILCHON i
+		JOIN MEMBER m
+		ON i.ILCHON_NO = m.USER_NO
+		 WHERE i.ILCHON_NO = #{no} AND i.USER_NO = #{userNo}
+	</select>
+	
+	<select id="findMyIlchonByNo" resultMap="IlchonMemberResultMap">
+		SELECT i.ILCHON_IDX,
+		       m.USER_NO,
+		       i.ILCHON_NO,
+		       i.ILCHON_NICK,
+		       i.ILCHON_CATE,
+		       i.ILCHON_STATUS,
+		       m.USER_ID,
+		       m.USER_PWD,
+		       m.NAME,
+		       m.ROLE,
+		       m.PHONE,
+		       m.EMAIL,
+		       m.BIRTH,
+		       m.ADDRESS,
+		       m.SEARCH_ME,
+		       m.GENDER,
+		       m.MINIMI,
+		       m.CREATE_DATE,
+		       m.ACORN,
+		       m.STATUS
+		FROM ILCHON i
+		JOIN MEMBER m
+		ON i.ILCHON_NO = m.USER_NO
+		 WHERE i.ILCHON_NO = #{ilchonNo} AND i.USER_NO = #{userNo}
+	</select>
+	
+	<!-- 일촌 신청 요청 (보낸 일촌 편지함으로 저장)-->
+	<insert id="insertMessage" parameterType="Message"
+		useGeneratedKeys="true"	keyProperty="messageNo" keyColumn="M_NO">
+		INSERT INTO MESSAGE
+		(M_USER_NO, M_ILCHON_NO, M_TITLE, M_CONTENT, M_SEND_DATE, M_READ_DATE, M_READ, M_STATUS
+		)VALUES (
+		#{message.userNo}, #{message.ilchonNo}, #{message.messageTitle}, #{message.messageContnet}, DEFAULT,DEFAULT,DEFAULT,DEFAULT)
+	</insert>
+	
+	<!-- 내가 보낸 쪽지함 (sent) 목록 조회 -->
+	<select id="selectAllMessage" resultMap="MessageMemberResultMap">
+		 	SELECT M.M_NO,
+		       M.M_USER_NO,
+		       M.M_ILCHON_NO,
+		       M.M_TITLE,
+		       M.M_CONTENT,
+		       M.M_SEND_DATE,
+		       M.M_READ_DATE,
+		       M.M_READ,
+		       M.M_STATUS,
+		       U.USER_ID,
+		       U.NAME,
+		       U.ROLE,
+		       U.PHONE,
+		       U.EMAIL,
+		       U.BIRTH,
+		       U.ADDRESS,
+		       U.SEARCH_ME,
+		       U.GENDER,
+		       U.MINIMI,
+		       U.CREATE_DATE,
+		       U.ACORN,
+		       U.STATUS
+		FROM MESSAGE M
+		JOIN MEMBER U ON M.M_ILCHON_NO = U.USER_NO
+		 WHERE M_USER_NO = #{no}
+	</select>
+	
+	<!-- 내가 받은 쪽지함 (inbox) 목록 조회 -->
+	<select id="receiveAllMessage" resultMap="MessageMemberResultMap">
+		 SELECT M.M_NO,
+		       M.M_USER_NO,
+		       M.M_ILCHON_NO,
+		       M.M_TITLE,
+		       M.M_CONTENT,
+		       M.M_SEND_DATE,
+		       M.M_READ_DATE,
+		       M.M_READ,
+		       M.M_STATUS,
+		       U.USER_ID,
+		       U.NAME,
+		       U.ROLE,
+		       U.PHONE,
+		       U.EMAIL,
+		       U.BIRTH,
+		       U.ADDRESS,
+		       U.SEARCH_ME,
+		       U.GENDER,
+		       U.MINIMI,
+		       U.CREATE_DATE,
+		       U.ACORN,
+		       U.STATUS
+		FROM MESSAGE M
+		JOIN MEMBER U ON M.M_USER_NO = U.USER_NO
+		WHERE M_ILCHON_NO = #{no} 
+	</select>
+	
+	<!-- Message 목록 정보 조회 (메시지 no값 불러오기) -->
+	<select id="selectMessage" resultMap="MessageMemberResultMap">
+		SELECT M.M_NO,
+		       M.M_USER_NO,
+		       M.M_ILCHON_NO,
+		       M.M_TITLE,
+		       M.M_CONTENT,
+		       M.M_SEND_DATE,
+		       M.M_READ_DATE,
+		       M.M_READ,
+		       M.M_STATUS,
+		       U.USER_ID,
+		       U.NAME,
+		       U.ROLE,
+		       U.PHONE,
+		       U.EMAIL,
+		       U.BIRTH,
+		       U.ADDRESS,
+		       U.SEARCH_ME,
+		       U.GENDER,
+		       U.MINIMI,
+		       U.CREATE_DATE,
+		       U.ACORN,
+		       U.STATUS
+		FROM MESSAGE M
+		JOIN MEMBER U ON M.M_USER_NO = U.USER_NO
+		 WHERE M_NO = #{no}
+	</select>
+	
+	<select id="readMessage" resultMap="MessageMemberResultMap">
+		SELECT M.M_NO,
+		       M.M_USER_NO,
+		       M.M_ILCHON_NO,
+		       M.M_TITLE,
+		       M.M_CONTENT,
+		       M.M_SEND_DATE,
+		       M.M_READ_DATE,
+		       M.M_READ,
+		       M.M_STATUS,
+		       U.USER_ID,
+		       U.NAME,
+		       U.ROLE,
+		       U.PHONE,
+		       U.EMAIL,
+		       U.BIRTH,
+		       U.ADDRESS,
+		       U.SEARCH_ME,
+		       U.GENDER,
+		       U.MINIMI,
+		       U.CREATE_DATE,
+		       U.ACORN,
+		       U.STATUS
+		FROM MESSAGE M
+		JOIN MEMBER U ON M.M_ILCHON_NO = U.USER_NO
+		 WHERE M_NO = #{no}
+	</select>
+	
+	<!-- 
+	<insert id="insertAnswer">
+		INSERT INTO MESSAGE_ANSWER (
+	 		M_NO,
+			A_SENDER_NO,
+			A_RECEIVER_NO,
+			A_ANSWER_CONTENT,
+			A_ANSWER_DATE,
+			A_STATUS
+			)VALUES (
+			#{messageNo},
+			#{sender},
+			#{receiver},
+			#{answerContnet},
+			DEFAULT,
+			DEFAULT
+		)
+	</insert>
+	 -->
+	
+
+</mapper>

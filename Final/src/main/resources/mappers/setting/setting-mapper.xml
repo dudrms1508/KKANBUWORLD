@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.kh.world.setting.model.mapper.SettingMapper">
+
+<resultMap id="productResultMap" type="ProductVo">
+	<id property="product_code" column="PRODUCT_CODE" />
+	<result property="category_code" column="CATEGORY_CODE"/>
+	<result property="product_name" column="PRODUCT_NAME"/>
+	<result property="product_money" column="PRODUCT_PRICE"/>
+	<result property="product_date" column="PRODUCT_DATE"/>
+	<result property="status" column="STATUS"/>
+	<result property="product_file" column="PRODUCT_FILE"/>
+	<result property="product_url" column="PRODUCT_URL"/>
+	<association property="myitem" javaType="MyItem" columnPrefix="P." 
+	resultMap="myItemResultMap"/>
+</resultMap>
+
+<resultMap type="MyItem" id="myItemResultMap">
+	<result property="user_no" column="USER_NO"/>
+	<result property="product_code" column="PRODCUT_CODE"/>
+</resultMap>
+
+<resultMap id="memberResultMap" type="Member">
+	<id property="no" column="USER_NO"/>
+		
+	<result property="id" column="USER_ID"/>
+	<result property="password" column="USER_PWD"/>
+	<result property="name" column="NAME"/>
+	<result property="role" column="ROLE"/>
+	<result property="phone" column="PHONE"/>
+	<result property="email" column="EMAIL"/>
+	<result property="birth" column="BIRTH"/>
+	<result property="address" column="ADDRESS"/>
+	<result property="searchMe" column="SEARCH_ME"/>
+	<result property="gender" column="GENDER"/>
+	<result property="minimi" column="MINIMI"/>
+	<result property="createDate" column="CREATE_DATE"/>
+	<result property="acorn" column="ACORN"/>
+	<result property="status" column="STATUS"/>
+</resultMap>
+
+<resultMap type="Minihome" id="minihomeResultMap">
+	<id property="minihomeNo"  column="MINIHOME_NO"/>
+	<result property="userNo"  column="USER_NO"/>
+	<result property="profile"  column="PROFILE"/>
+	<result property="intro"  column="INTRO"/>
+	<result property="mood"  column="MOOD"/>
+	<result property="mbti"  column="MBTI"/>
+	<result property="miniroom"  column="MINIROOM"/>
+	<result property="mhAccess"  column="MH_ACCESS"/>
+	<result property="theme"  column="THEME"/>
+</resultMap>
+
+
+
+<select id="getSkinList" parameterType="_int" resultMap="productResultMap">
+SELECT P.PRODUCT_CODE, P.CATEGORY_CODE ,PRODUCT_NAME, PRODUCT_URL  
+FROM PRODUCT P
+INNER JOIN MyItem M on(M.PRODCUT_CODE = P.PRODUCT_CODE)
+WHERE M.USER_NO = ${miniNo} AND P.CATEGORY_CODE = 'THEME'
+
+
+</select>
+
+<update id="updateSearch">
+UPDATE MEMBER SET SEARCH_ME = '${searchme}'
+WHERE USER_NO = '${miniNo}'
+</update>
+
+<update id="updateSkin">
+UPDATE MINIHOME SET THEME = '${product_name}'
+WHERE USER_NO = '${miniNo}' 
+</update>
+
+<update id="updateTheme">
+UPDATE MINIHOME SET THEME = #{theme}
+WHERE USER_NO = #{userNo} 
+</update>
+
+<select id="readMinihome" resultType="Minihome">
+SELECT * FROM MINIHOME WHERE MINIHOME_NO = #{minihomeNo}
+</select>
+
+<select id="getMusicList" parameterType="_int" resultMap="productResultMap">
+SELECT P.PRODUCT_CODE, P.CATEGORY_CODE ,PRODUCT_NAME, PRODUCT_URL  
+FROM PRODUCT P
+INNER JOIN MyItem M on(M.PRODCUT_CODE = P.PRODUCT_CODE)
+WHERE M.USER_NO = ${miniNo} AND P.CATEGORY_CODE = 'BGM'
+</select>
+
+<update id="updatembti">
+UPDATE MINIHOME SET MBTI = '${mbti}'
+WHERE USER_NO = '${miniNo}'
+</update>
+
+
+</mapper>

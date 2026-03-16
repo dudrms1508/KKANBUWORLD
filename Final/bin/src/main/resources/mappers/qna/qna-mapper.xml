@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.kh.world.qna.model.mapper.QNAMapper">
+
+	<resultMap id="qnaResultMap" type="QNA">
+		<!-- 조회 결과의 기본키 컬럼을 매핑할 때 사용 -->
+		<!-- <id property="no" column="QNA_NO"/> -->
+		
+		<!-- 조회 결과 일반 컬럼을 매핑한다 -->
+		<result property="no" column="QNA_NO"/>
+		<result property="userNo" column="USER_NO"/>
+		<result property="title" column="QNA_TITLE"/>
+		<result property="email" column="QNA_EMAIL"/>
+		<result property="category" column="QNA_CATEGORY"/>
+		<result property="content" column="QNA_CONTENT"/>
+		<result property="Q_Date" column="QNA_Q_DATE"/>
+		<result property="answer" column="QNA_ANSWER"/>
+		<result property="status" column="QNA_STATUS"/>
+		<result property="A_Date" column="QNA_A_DATE"/>
+	</resultMap>
+
+
+
+	<insert id="insertQNA" parameterType="QNA"
+			useGeneratedKeys="true" keyColumn="QNA_NO" keyProperty="no">
+		INSERT INTO QNA(
+			QNA_NO,
+			QNA_TITLE,
+			QNA_EMAIL,
+			QNA_CATEGORY,
+			QNA_CONTENT,  
+			QNA_Q_DATE,
+			QNA_A_DATE
+		)
+		 VALUES(
+		 	(SELECT NEXTVAL('qna_seq') FROM DUAL),
+		 	#{title},
+		 	#{email},
+		 	#{category},
+		 	#{content},
+		 	DEFAULT,
+		 	NULL
+		 )
+		
+	</insert>
+	
+	
+	
+</mapper>

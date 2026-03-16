@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.helloworld.MngMinihomeMapper">
+
+ 	<select id="getCntDate" resultType="Date">
+ 		select ${col_cnt_date} from ${main_form} where ${col_userid} = #{userid}
+ 	</select>
+ 	
+ 	<select id="select_all_mainform" resultType = "MainformVO">
+ 		select * from ${main_form} where ${col_userid} = #{userid}
+ 	</select>
+ 	
+ 	<update id="update_cnt">
+ 		update ${main_form}
+ 		set ${col_today_cnt} = ${col_today_cnt} + 1, ${col_total_cnt} = ${col_total_cnt} + 1
+ 		where ${col_userid} = #{userid}
+ 	</update>
+ 	
+ 	<update id="reset_cnt">
+ 		update ${main_form}
+ 		set ${col_today_cnt} = 0, ${col_cnt_date} = sysdate
+ 		where ${col_userid} = #{userid}
+ 	</update>
+ 	
+ 	<update id="update_title">
+ 		update ${main_form}
+ 		set ${col_main_title} = #{main_title}
+ 		where ${col_userid} = #{userid}
+ 	</update>
+	
+	<update id="update_profile_content">
+ 		update ${main_form}
+ 		set ${col_profile_content} = #{profile_content}
+ 		where ${col_userid} = #{userid}
+ 	</update>
+ 	
+ 	<update id = "update_photo">
+ 		update ${main_form}
+ 		set ${col_profile_photo} = #{profile_photo}
+ 		where ${col_userid} = #{userid}
+ 	
+ 	</update>
+ 	
+ 	<update id="update_tap_menu">
+ 		update ${main_form}
+ 		set ${col_tap_menu} = #{tap_menu}
+ 		where ${col_userid} = #{userid}
+ 	</update>
+ 	
+ 	<update id="update_theme">
+ 		update ${main_form}
+ 		set ${col_theme} = #{theme}
+ 		where ${col_userid} = #{userid}
+ 	</update>
+	
+</mapper>

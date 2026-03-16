@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.helloworld.AnnounceMapper">
+
+<select id="select_page" resultType="AnnounceBoardVO">
+	select
+	b.an_bno, b.an_title, b.an_content ,b.an_date, b.an_menu
+
+	from (
+	select rownum rn, a.*
+	from (
+	select * from
+	${announce_board} order by ${col_an_bno} desc
+	) a
+	) b
+	where rn between #{start} and #{end}
+	</select>
+   
+   <select id="announce_all" resultType="AnnounceBoardVO">
+   		select * from ${announce_board}
+   			order by ${col_an_bno} desc
+   </select>
+   
+   <insert id="announce_insert">
+   insert into ${announce_board}(
+   ${col_an_title}, ${col_an_content}, ${col_an_menu}) 
+		values(#{an_title}, #{an_content}, #{an_menu} )
+   </insert>
+   
+   <update id="announce_update">
+   	update ${announce_board}
+		set ${col_an_title} = #{an_title}, ${col_g_content} = #{g_content}
+		where ${col_an_bno} = #{an_bno}
+   </update>
+	
+   <delete id="announce_delete">
+     	delete from ${announce_board}
+  	where ${col_an_bno} = #{an_bno}
+   </delete>
+   
+   <select id="announce_count" resultType="Integer">
+   select count(*) from ${announce_board}
+   </select>
+</mapper>

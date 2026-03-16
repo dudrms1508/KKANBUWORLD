@@ -1,0 +1,23 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+
+
+
+<header>
+	<div id="headerWrapper">
+		<img id="logoInHeader"
+			src="${pageContext.request.contextPath}/resources/images/logoIconwhite.png">
+
+		<c:if test="${loginId == null  }">
+			<a><button id="btnLogout" class="login">Login</button></a>
+		</c:if>
+		<c:if test="${loginId != null  }">
+		<a id="pWelecomeMsg">${loginId }님 반갑읍니다</a>
+			<a><button id="btnLogout" class="logout">logout</button></a>
+		</c:if>
+
+	</div>
+	
+	
+</header>
+

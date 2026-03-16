@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.kh.world.banner.model.mapper.BannerMapper">
+
+	<sql id="noticeSql">
+		SELECT NOTICE_NO,
+				USER_NO,
+				NOTICE_TITLE,
+				NOTICE_CONTENT,
+				NOTICE_DATE,
+				NOTICE_VIEW,
+				NOTICE_STATUS
+		FROM NOTICE
+	</sql>
+	
+	<resultMap id="noticeResultMap" type="Notice">
+		<result property="no" column="NOTICE_NO"/>
+		<result property="userNo" column="USER_NO"/>
+		<result property="title" column="NOTICE_TITLE"/>
+		<result property="content" column="NOTICE_CONTENT"/>
+		<result property="date" column="NOTICE_DATE"/>
+		<result property="view" column="NOTICE_VIEW"/>
+		<result property="status" column="NOTICE_STATUS"/>
+	</resultMap>
+	
+	<!-- 공지사항 최신 게시글 가져오기 (1개) -->
+	<select id="previewNotice" parameterType="string" resultMap="noticeResultMap">
+		SELECT NOTICE_NO,
+			   NOTICE_TITLE
+		FROM ${table}
+		ORDER BY NOTICE_NO DESC LIMIT 1
+	</select>
+	
+	<!-- 공지사항 게시글 번호 가져오기 (1개) -->
+	<select id="findNoticeNo" resultType="_int">
+		SELECT NOTICE_NO
+		FROM NOTICE
+		ORDER BY NOTICE_NO DESC LIMIT 1	
+	</select>
+</mapper>

@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.kh.world.ilchon.model.mapper.IlchonMapper">
+
+	<sql id="selectMemberSql">
+		 SELECT USER_NO,
+				USER_ID,
+				USER_PWD,
+				NAME,
+				ROLE,
+				PHONE,
+				EMAIL,
+				BIRTH,
+				ADDRESS,
+				SEARCH_ME,
+				GENDER,
+				MINIMI,
+				CREATE_DATE,
+				ACORN,
+				STATUS
+		FROM MEMBER 
+	</sql>
+	
+	<sql id="selectRequestSql">
+		 SELECT REQ_NO,
+		 		REQ_SENDER_NO,
+		 		REQ_RECEIVER_NO,
+		 		REQ_ILCHON_NICK,
+		 		REQ_TITLE,
+		 		REQ_CONTENT,
+		 		REQ_DATE,
+		 		REQ_STATUS
+		FROM REQUEST
+	</sql>
+	
+	
+	<sql id="selectIlchonSql">
+		 SELECT ILCHON_IDX,
+				USER_NO,
+				ILCHON_NO,
+				ILCHON_NICK,
+				ILCHON_CATE,
+				ILCHON_STATUS
+		FROM ILCHON
+	</sql>
+	
+	<sql id="selectDetailIlchonSql">
+		SELECT i.ILCHON_IDX,
+		       m.USER_NO,
+		       i.ILCHON_NO,
+		       i.ILCHON_NICK,
+		       i.ILCHON_CATE,
+		       i.ILCHON_STATUS,
+		       m.USER_ID,
+		       m.USER_PWD,
+		       m.NAME,
+		       m.ROLE,
+		       m.PHONE,
+		       m.EMAIL,
+		       m.BIRTH,
+		       m.ADDRESS,
+		       m.SEARCH_ME,
+		       m.GENDER,
+		       m.MINIMI,
+		       m.CREATE_DATE,
+		       m.ACORN,
+		       m.STATUS
+		FROM ILCHON i
+		JOIN MEMBER m
+		ON i.ILCHON_NO = m.USER_NO
+	</sql>
+	
+	<sql id="selectDetailSentSql">
+		SELECT r.REQ_NO,
+		 	   r.REQ_SENDER_NO,
+		 	   r.REQ_RECEIVER_NO,
+		 	   r.REQ_ILCHON_NICK,
+		 	   r.REQ_TITLE,
+		 	   r.REQ_CONTENT,
+		 	   r.REQ_DATE,
+		 	   r.REQ_STATUS,
+		       m.USER_ID,
+		       m.USER_PWD,
+		       m.NAME,
+		       m.ROLE,
+		       m.PHONE,
+		       m.EMAIL,
+		       m.BIRTH,
+		       m.ADDRESS,
+		       m.SEARCH_ME,
+		       m.GENDER,
+		       m.MINIMI,
+		       m.CREATE_DATE,
+		       m.ACORN,
+		       m.STATUS
+		FROM REQUEST r
+		JOIN MEMBER m
+		ON r.REQ_SENDER_NO = m.USER_NO
+	</sql>
+	
+	
+	<resultMap id="memberResultMap" type="Member">
+		<id property="no" column="USER_NO"/>
+		<result property="id" column="USER_ID"/>
+		<result property="password" column="USER_PWD"/>
+		<result property="name" column="NAME"/>
+		<result property="role" column="ROLE"/>
+		<result property="phone" column="PHONE"/>
+		<result property="email" column="EMAIL"/>
+		<result property="birth" column="BIRTH"/>
+		<result property="address" column="ADDRESS"/>
+		<result property="searchMe" column="SEARCH_ME"/>
+		<result property="gender" column="GENDER"/>
+		<result property="minimi" column="MINIMI"/>
+		<result property="createDate" column="CREATE_DATE"/>
+		<result property="acorn" column="ACORN"/>
+		<result property="status" column="STATUS"/>
+	</resultMap>
+	
+	<resultMap id="requestResultMap" type="Request">
+		<id property="requestNo" column="REQ_NO"/>
+		<result property="sender" column="REQ_SENDER_NO"/>
+		<result property="receiver" column="REQ_RECEIVER_NO"/>
+		<result property="ilchonNick" column="REQ_ILCHON_NICK"/>
+		<result property="requestTitle" column="REQ_TITLE"/>
+		<result property="requestContent" column="REQ_CONTENT"/>
+		<result property="requestDate" column="REQ_DATE"/>
+		<result property="requestStatus" column="REQ_STATUS"/>
+	</resultMap>
+	
+	<resultMap id="requestMemberResultMap" type="Request">
+		<id property="requestNo" column="REQ_NO"/>
+		<result property="sender" column="REQ_SENDER_NO"/>
+		<result property="receiver" column="REQ_RECEIVER_NO"/>
+		<result property="ilchonNick" column="REQ_ILCHON_NICK"/>
+		<result property="requestTitle" column="REQ_TITLE"/>
+		<result property="requestContent" column="REQ_CONTENT"/>
+		<result property="requestDate" column="REQ_DATE"/>
+		<result property="requestStatus" column="REQ_STATUS"/>
+		<association property="member" resultMap="memberResultMap"/>
+	</resultMap>
+	
+	<resultMap id="IlchonResultMap" type="Ilchon">
+		<id property="indexNo" column="ILCHON_IDX"/>
+		<result property="userNo" column="USER_NO"/>
+		<result property="ilchonNo" column="ILCHON_NO"/>
+		<result property="ilchonNick" column="ILCHON_NICK"/>
+		<result property="ilchonCate" column="ILCHON_CATE"/>
+		<result property="ilchonStatus" column="ILCHON_STATUS"/>
+	</resultMap>
+	
+	<resultMap id="IlchonMemberResultMap" type="Ilchon">
+		<id property="indexNo" column="ILCHON_IDX"/>
+		<result property="userNo" column="USER_NO"/>
+		<result property="ilchonNo" column="ILCHON_NO"/>
+		<result property="ilchonNick" column="ILCHON_NICK"/>
+		<result property="ilchonCate" column="ILCHON_CATE"/>
+		<result property="ilchonStatus" column="ILCHON_STATUS"/>
+		<association property="member" resultMap="memberResultMap"/>
+	</resultMap>
+	
+	<resultMap id="MemberIlchonResultMap" type="Member">
+		<id property="no" column="USER_NO"/>
+		<result property="id" column="USER_ID"/>
+		<result property="password" column="USER_PWD"/>
+		<result property="name" column="NAME"/>
+		<result property="role" column="ROLE"/>
+		<result property="phone" column="PHONE"/>
+		<result property="email" column="EMAIL"/>
+		<result property="birth" column="BIRTH"/>
+		<result property="address" column="ADDRESS"/>
+		<result property="searchMe" column="SEARCH_ME"/>
+		<result property="gender" column="GENDER"/>
+		<result property="minimi" column="MINIMI"/>
+		<result property="createDate" column="CREATE_DATE"/>
+		<result property="acorn" column="ACORN"/>
+		<result property="status" column="STATUS"/>
+		<association property="ilchon" resultMap="IlchonResultMap"/>
+	</resultMap>
+	
+	<!-- 회원 목록 조회 (memberlist.jsp)-->
+	<select id="selectall" resultMap="memberResultMap">
+		 	SELECT USER_NO, 
+				USER_ID, 
+				NAME, 
+				MINIMI 
+		  	FROM MEMBER
+		  	WHERE SEARCH_ME = 'N'
+	</select>
+	
+	<!-- 전체 회원 수 카운트 -->
+	<select id="getMemberCount" resultType="_int">
+		SELECT COUNT(*) FROM MEMBER
+	</select>
+	
+	<!-- 회원 정보 조회 (회원 정보 값 불러오기) -->
+	<select id="selectMemberNo" parameterType="_int" resultMap="memberResultMap">
+		 	<include refid="selectMemberSql"/>
+		  	WHERE USER_NO = #{no}
+	</select>
+	
+	<!-- AnswerModal용 Request 목록 정보 조회 (회원 정보 값 불러오기) -->
+	<select id="selectRequest" resultMap="requestMemberResultMap">
+			SELECT r.REQ_NO,
+			 	   r.REQ_SENDER_NO,
+			 	   r.REQ_RECEIVER_NO,
+			 	   r.REQ_ILCHON_NICK,
+			 	   r.REQ_TITLE,
+			 	   r.REQ_CONTENT,
+			 	   r.REQ_DATE,
+			 	   r.REQ_STATUS,
+			       m.USER_ID,
+			       m.USER_PWD,
+			       m.NAME,
+			       m.ROLE,
+			       m.PHONE,
+			       m.EMAIL,
+			       m.BIRTH,
+			       m.ADDRESS,
+			       m.SEARCH_ME,
+			       m.GENDER,
+			       m.MINIMI,
+			       m.CREATE_DATE,
+			       m.ACORN,
+			       m.STATUS
+			FROM REQUEST r
+			JOIN MEMBER m
+			ON r.REQ_SENDER_NO = m.USER_NO
+		 	WHERE REQ_NO = #{no}
+	</select>
+	
+	<!-- readModal용 Request 목록 정보 조회 (회원 정보 값 불러오기) -->
+	<select id="selectReadRequest" resultMap="requestMemberResultMap">
+			SELECT r.REQ_NO,
+			 	   r.REQ_SENDER_NO,
+			 	   r.REQ_RECEIVER_NO,
+			 	   r.REQ_ILCHON_NICK,
+			 	   r.REQ_TITLE,
+			 	   r.REQ_CONTENT,
+			 	   r.REQ_DATE,
+			 	   r.REQ_STATUS,
+			       m.USER_ID,
+			       m.USER_PWD,
+			       m.NAME,
+			       m.ROLE,
+			       m.PHONE,
+			       m.EMAIL,
+			       m.BIRTH,
+			       m.ADDRESS,
+			       m.SEARCH_ME,
+			       m.GENDER,
+			       m.MINIMI,
+			       m.CREATE_DATE,
+			       m.ACORN,
+			       m.STATUS
+			FROM REQUEST r
+			JOIN MEMBER m
+			ON r.REQ_RECEIVER_NO = m.USER_NO
+		 	WHERE REQ_NO = #{no}
+	</select>
+	
+	
+	<!-- Request 목록 정보 조회 (회원 정보 값 불러오기) -->
+	<select id="selectRequestNo" parameterType="_int" resultMap="requestResultMap">
+		 	<include refid="selectRequestSql"/>
+		  	WHERE REQ_SENDER_NO = #{sender} and REQ_RECEIVER_NO = #{receiver}
+	</select>
+	
+	<!-- 일촌 신청 요청 (보낸 일촌 편지함으로 저장)-->
+	<insert id="insertRequest" parameterType="Request"
+		useGeneratedKeys="true"	keyProperty="requestNo" keyColumn="REQ_NO">
+		INSERT INTO REQUEST (
+		    REQ_NO,
+		    REQ_SENDER_NO,
+		    REQ_RECEIVER_NO,
+		    REQ_ILCHON_NICK,
+		    REQ_TITLE,
+		    REQ_CONTENT,
+		    REQ_DATE,
+		    REQ_STATUS
+		  ) VALUES(
+		  (SELECT NEXTVAL('SEQ_REQUEST') FROM DUAL),
+		  #{sender},#{receiver},#{ilchonNick},#{requestTitle},#{requestContent},DEFAULT,DEFAULT)
+	</insert>
+	
+
+	<!-- 나의 일촌 목록 조회 -->
+	<select id="selectIlchonAll" resultMap="IlchonMemberResultMap">
+		 	<include refid="selectDetailIlchonSql"/>
+		 	WHERE i.USER_NO = #{no} AND i.ILCHON_STATUS='Y'
+	</select>
+	
+	<!-- (회원정보 조회에서 내역 조회) 나의 일촌 목록 조회 -->
+	<select id="findMyIlchons" resultMap="IlchonResultMap">
+		 	<include refid="selectIlchonSql"/>
+		 	WHERE USER_NO = #{no}
+	</select>
+	
+	<!-- 전체 보낸 편지 (sent) 목록 조회 -->
+	<select id="findMyRequest" resultMap="requestResultMap">
+		 	<include refid="selectRequestSql"/>
+		 	WHERE REQ_SENDER_NO = #{no} 
+	</select>
+	
+	<!-- (회원정보 조회에서 내역 조회) 나의 일촌이 아닌 목록 조회 -->
+	<select id="exceptMyIlchons" resultMap="memberResultMap">
+		 SELECT USER_NO,
+				USER_ID,
+				USER_PWD,
+				NAME,
+				ROLE,
+				PHONE,
+				EMAIL,
+				BIRTH,
+				ADDRESS,
+				SEARCH_ME,
+				GENDER,
+				MINIMI,
+				CREATE_DATE,
+				ACORN,
+				STATUS
+		FROM MEMBER
+		<if test="ilchons.size != 0 or request.size != 0">
+		  WHERE USER_NO != #{no}
+		  <if test="ilchons.size != 0">
+		    AND USER_NO NOT IN
+		    <foreach collection="ilchons" item="ilchon" open="(" separator="," close=")">
+		      #{ilchon.ilchonNo}
+		    </foreach>
+		  </if>
+		  <if test="request.size != 0">
+		    AND USER_NO NOT IN
+		    <foreach collection="request" item="request" open="(" separator="," close=")">
+		      #{request.receiver}
+		    </foreach>
+		  </if>
+		</if>
+	</select>
+	
+	<!-- 나의 일촌 수 카운트 -->
+	<select id="selectIlchonCount" resultType="_int">
+		 	SELECT COUNT(*) FROM ILCHON WHERE ILCHON_STATUS='Y'
+		 	AND USER_NO = #{no}
+	</select>
+	
+	<!-- 전체 보낸 편지 (sent) 목록 조회 -->
+	<select id="selectAllRequest" resultMap="requestMemberResultMap">
+		 SELECT r.REQ_NO,
+		 	   r.REQ_SENDER_NO,
+		 	   r.REQ_RECEIVER_NO,
+		 	   r.REQ_ILCHON_NICK,
+		 	   r.REQ_TITLE,
+		 	   r.REQ_CONTENT,
+		 	   r.REQ_DATE,
+		 	   r.REQ_STATUS,
+		       m.USER_ID,
+		       m.USER_PWD,
+		       m.NAME,
+		       m.ROLE,
+		       m.PHONE,
+		       m.EMAIL,
+		       m.BIRTH,
+		       m.ADDRESS,
+		       m.SEARCH_ME,
+		       m.GENDER,
+		       m.MINIMI,
+		       m.CREATE_DATE,
+		       m.ACORN,
+		       m.STATUS
+		FROM REQUEST r
+		JOIN MEMBER m
+		ON r.REQ_RECEIVER_NO = m.USER_NO
+		WHERE REQ_SENDER_NO = #{no} 
+	</select>
+	
+	<!-- 내가 받은 편지 (inbox) 목록 조회 -->
+	<select id="receiveAllRequest" resultMap="requestMemberResultMap">
+		SELECT r.REQ_NO,
+		 	   r.REQ_SENDER_NO,
+		 	   r.REQ_RECEIVER_NO,
+		 	   r.REQ_ILCHON_NICK,
+		 	   r.REQ_TITLE,
+		 	   r.REQ_CONTENT,
+		 	   r.REQ_DATE,
+		 	   r.REQ_STATUS,
+		       m.USER_ID,
+		       m.USER_PWD,
+		       m.NAME,
+		       m.ROLE,
+		       m.PHONE,
+		       m.EMAIL,
+		       m.BIRTH,
+		       m.ADDRESS,
+		       m.SEARCH_ME,
+		       m.GENDER,
+		       m.MINIMI,
+		       m.CREATE_DATE,
+		       m.ACORN,
+		       m.STATUS
+		FROM REQUEST r
+		JOIN MEMBER m
+		ON r.REQ_SENDER_NO = m.USER_NO
+		WHERE REQ_RECEIVER_NO = #{no} 
+	</select>
+	
+	
+	<!-- 일촌 수락 승인 (ilchonList로 저장)-->
+	<insert id="insertIlchon" parameterType="Ilchon"
+		useGeneratedKeys="true"	keyProperty="indexNo" keyColumn="ILCHON_IDX">
+		INSERT INTO ILCHON (
+		    ILCHON_IDX,
+		    USER_NO,
+		    ILCHON_NO,
+		    ILCHON_NICK,
+		    ILCHON_CATE,
+		    ILCHON_STATUS
+		  ) VALUES(
+		  (SELECT NEXTVAL('SEQ_ILCHON') FROM DUAL),
+		  #{userNo},#{ilchonNo},#{ilchonNick},DEFAULT,DEFAULT)
+	</insert>
+	
+	
+	<!-- 내가 받은 편지 (inbox)에서 request DB 목록 조회-->
+	<select id="receiveRequestInfo" resultMap="requestMemberResultMap">
+		 	<include refid="selectRequestSql"/>
+		 	WHERE REQ_RECEIVER_NO = #{no} AND REQ_NO = #{requestNo}
+	</select>
+	
+		<!-- 내가 보낸 편지 (sent)에서 request DB 목록 조회-->
+	<select id="sentRequestInfo" resultMap="requestMemberResultMap">
+		 	<include refid="selectRequestSql"/>
+		 	WHERE REQ_SENDER_NO = #{no} AND REQ_NO = #{requestNo}
+	</select>
+	
+	
+	<select id="ilchonSearch" parameterType="map" resultMap="IlchonMemberResultMap">
+	    SELECT m.NAME, m.USER_ID, i.ILCHON_NICK
+	    FROM MEMBER m
+	    JOIN ILCHON i ON m.USER_NO = i.ILCHON_NO
+	    WHERE i.ILCHON_STATUS = 'Y'and i.USER_NO = #{no}
+	      <choose>
+	      	  <when test="type=='id'">
+	              AND m.USER_ID LIKE concat('%',#{keyword},'%' )
+	          </when>
+	          <when test="type=='name'">
+	              AND m.NAME LIKE concat('%',#{keyword},'%' )
+	          </when>
+	          <when test="type=='nick'">
+	              AND i.ILCHON_NICK LIKE concat('%',#{keyword},'%' )
+	          </when>
+	      </choose>
+	    ORDER BY i.ILCHON_NICK DESC
+	</select>
+	
+	
+	<select id="memberSearch" parameterType="map" resultMap="memberResultMap">
+	    SELECT NAME, USER_ID
+	    FROM MEMBER
+	    WHERE
+	      <choose>
+	      	  <when test="type=='id'">
+	              USER_ID LIKE concat('%',#{keyword},'%' )
+	          </when>
+	          <when test="type=='name'">
+	              NAME LIKE concat('%',#{keyword},'%' )
+	          </when>
+	      </choose>
+	</select>
+	
+	
+	<update id="updateRequestStatus">
+  		UPDATE REQUEST SET REQ_STATUS = 'Y' WHERE REQ_NO = #{requestNo}
+	</update>
+
+	
+	<!-- (inbox에서 내역 조회) 나의 일촌이 아닌 request 함의 목록 조회 -->
+	<select id="exceptMyRequest" resultMap="requestResultMap">
+		 SELECT REQ_NO,
+		 		REQ_SENDER_NO,
+		 		REQ_RECEIVER_NO,
+		 		REQ_ILCHON_NICK,
+		 		REQ_TITLE,
+		 		REQ_CONTENT,
+		 		REQ_DATE,
+		 		REQ_STATUS
+		FROM REQUEST
+		<if test="ilchons.size != 0">
+		WHERE REQ_RECEIVER_NO = #{no}
+			<if test="ilchons.size != 0">
+			    AND REQ_SENDER_NO NOT IN
+			    <foreach collection="ilchons" item="ilchon" open="(" separator="," close=")">
+			      #{ilchon.ilchonNo}
+			    </foreach>
+			</if>
+		</if>
+	</select>
+	
+	<!-- 미니홈 no 불러오고 싶은데 어떻게 하는거지? -->
+	<select id="selectUserNo" resultType="_int" >
+		SELECT USER_NO
+		FROM
+		MINIHOME
+		WHERE MINIHOME_NO = #{minihomeNo}
+	</select>
+	
+	<!-- 내일촌의 정보 -->
+	<select id="findMyIlchonByNo" resultMap="IlchonMemberResultMap">
+		SELECT i.ILCHON_IDX,
+		       m.USER_NO,
+		       i.ILCHON_NO,
+		       i.ILCHON_NICK,
+		       i.ILCHON_CATE,
+		       i.ILCHON_STATUS,
+		       m.USER_ID,
+		       m.USER_PWD,
+		       m.NAME,
+		       m.ROLE,
+		       m.PHONE,
+		       m.EMAIL,
+		       m.BIRTH,
+		       m.ADDRESS,
+		       m.SEARCH_ME,
+		       m.GENDER,
+		       m.MINIMI,
+		       m.CREATE_DATE,
+		       m.ACORN,
+		       m.STATUS
+		FROM ILCHON i
+		JOIN MEMBER m
+		ON i.USER_NO = m.USER_NO
+		WHERE m.USER_NO = #{userNo} AND i.ILCHON_NO = #{no}
+	</select>
+	
+	<update id="deleteIlchon">
+		UPDATE ILCHON
+		SET
+			ILCHON_STATUS = #{status}
+		WHERE ILCHON_NO = #{no}
+	</update>
+	
+	<update id="updateilchonNick">
+		UPDATE ILCHON
+		SET
+			ILCHON_NICK = #{ilchonNick}
+		WHERE USER_NO = #{userNo} AND ILCHON_NO = #{no}
+	</update>
+	
+	
+</mapper>

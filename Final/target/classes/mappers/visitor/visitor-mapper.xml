@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.kh.world.visitor.model.mapper.VisitorMapper">
+
+	<resultMap id="visitorResultMap" type="Visitor">
+		<id property="visitorNo" column="V_NO" />
+		<result property="rowNum" column="ROWNUM" />
+		<result property="minihomeNo" column="MINIHOME_NO" />
+		<result property="reportCode" column="REPORT_CODE" />
+		<result property="createDate" column="V_CREATE_DATE" />
+		<result property="modifyDate" column="V_MODIFY_DATE" />
+		<result property="content" column="V_CONTENT" />
+		<result property="secret" column="V_SECRET" />
+		<result property="report" column="V_REPORT" />
+		<result property="access" column="V_ACCESS" />
+		<result property="status" column="V_STATUS" />
+		<association property="writer" javaType="Member" columnPrefix="M_" 
+				resultMap="com.kh.world.member.model.mapper.MemberMapper.memberResultMap" />
+		<collection property="replies" javaType="arraylist" columnPrefix="R_" resultMap="visitorReplyResultMap" />
+	</resultMap>
+	
+	<resultMap id="visitorReplyResultMap" type="VisitorReply">
+		<id property="vreNo" column="VRE_NO" />
+		<id property="visitorNo" column="V_NO" />
+		<result property="createDate" column="VRE_CREATE_DATE" />
+		<result property="modifyDate" column="VRE_MODIFY_DATE" />
+		<result property="content" column="VRE_CONTENT" />
+		<result property="secret" column="VRE_SECRET" />
+		<result property="access" column="VRE_ACCESS" />
+		<result property="status" column="VRE_STATUS" />
+		<result property="depth" column="VRE_DEPTH" />
+		<result property="group" column="VRE_GROUP" />
+		<result property="step" column="VRE_STEP" />
+		<association property="writer" javaType="Member" columnPrefix="VRM_" 
+				resultMap="com.kh.world.member.model.mapper.MemberMapper.memberResultMap" />
+	</resultMap>
+	
+	<resultMap  id="reportCategoryResultMap" type="ReportCategory">
+		<result property="categoryCode" column="CATEGORYCODE" />
+		<result property="categoryName" column="CATEGORYNAME" />
+	</resultMap>
+	
+	
+	<insert id="insertVisitor">
+		INSERT INTO VISITOR (
+		V_NO,
+		MINIHOME_NO ,
+		REPORT_CODE ,
+		V_WRITER_NO ,
+		V_CREATE_DATE ,
+		V_MODIFY_DATE ,
+		V_CONTENT ,
+		V_SECRET ,
+		V_REPORT ,
+		V_ACCESS ,
+		V_STATUS 
+		)
+		VALUES (
+		(SELECT NEXTVAL('VISITOR_SEQ') FROM DUAL),
+		#{minihomeNo}, <!-- /* 방명록 미니홈피 NO */ -->
+		DEFAULT,
+		#{userNo}, <!-- /* 방명록 작성자 NO */ -->
+		DEFAULT,
+		DEFAULT,
+		#{content},
+		#{secret}, <!-- /* 비밀 여부 */ -->
+		DEFAULT, <!-- 신고 당한거 여부  --> 
+		DEFAULT, <!-- 방명록 작성자 권한 기준 -->
+		DEFAULT <!-- 삭제가 됐는지 안되었는지 -> 보여줄지 말지 -->
+		)
+	</insert>
+	
+	
+	<select id="findAllVisitor" parameterType="_int" resultMap="visitorResultMap">
+<!-- 		SELECT ROW_NUMBER() OVER(ORDER BY V_CREATE_DATE) AS ROWNUM,
+	   		   V.V_NO,
+			   V.MINIHOME_NO ,
+			   V.REPORT_CODE ,
+			   V.V_CREATE_DATE ,
+			   V.V_MODIFY_DATE ,
+			   V.V_CONTENT ,
+			   V.V_SECRET ,
+			   V.V_REPORT ,
+			   V.V_ACCESS ,
+			   V.V_STATUS,
+		   	   V.V_WRITER_NO AS M_USER_NO,
+		   	   M.USER_ID AS M_USER_ID,
+		   	   M.NAME AS M_NAME,
+		   	   M.PHONE AS M_PHONE,
+		   	   M.EMAIL AS M_EMAIL,
+		   	   M.SEARCH_ME AS M_SEARCH_ME,
+		   	   M.GENDER AS M_GENDER,
+		   	   M.MINIMI AS M_MINIMI,
+		   	   M.STATUS AS M_STATUS
+		FROM VISITOR V
+		INNER JOIN MINIHOME H ON (V.MINIHOME_NO = H.MINIHOME_NO)
+		INNER JOIN MEMBER M ON (M.USER_NO = V.V_WRITER_NO)
+		WHERE V.MINIHOME_NO = #{minihomeNo} AND V.V_STATUS = 'Y'
+		ORDER BY V_CREATE_DATE DESC -->
+			SELECT 
+				   ROWNUM,
+				   SUB.V_NO,
+				   SUB.MINIHOME_NO,
+				   SUB.REPORT_CODE,
+				   SUB.V_CREATE_DATE,
+				   SUB.V_MODIFY_DATE,
+				   SUB.V_CONTENT,
+				   SUB.V_SECRET,
+				   SUB.V_REPORT,
+				   SUB.V_ACCESS,
+				   SUB.V_STATUS,
+				   SUB.M_USER_NO,
+				   SUB.M_USER_ID,
+				   SUB.M_NAME,
+				   SUB.M_PHONE,
+				   SUB.M_EMAIL,
+				   SUB.M_SEARCH_ME,
+				   SUB.M_GENDER,
+				   SUB.M_MINIMI,
+				   SUB.M_STATUS,
+				   VRE.VRE_NO AS R_VRE_NO,
+				   VRE.V_NO AS R_V_NO,
+				   VRE.VRE_CREATE_DATE AS R_VRE_CREATE_DATE,
+				   VRE.VRE_MODIFY_DATE AS R_VRE_MODIFY_DATE,
+				   VRE.VRE_CONTENT AS R_VRE_CONTENT,
+				   VRE.VRE_SECRET AS R_VRE_SECRET,
+				   VRE.VRE_ACCESS AS R_VRE_ACCESS,
+				   VRE.VRE_STATUS AS R_VRE_STATUS,
+				   VRE.VRE_DEPTH AS R_VRE_DEPTH,
+				   VRE.VRE_GROUP  AS R_VRE_GROUP,
+				   VRE.VRE_STEP AS R_VRE_STEP,
+	   			   VRE.USER_NO AS R_VRM_USER_NO,
+			   	   VRE.USER_ID AS R_VRM_USER_ID,
+			   	   VRE.NAME AS R_VRM_NAME,
+			   	   VRE.PHONE AS R_VRM_PHONE,
+			   	   VRE.EMAIL AS R_VRM_EMAIL,
+			   	   VRE.SEARCH_ME AS R_VRM_SEARCH_ME,
+			   	   VRE.GENDER AS R_VRM_GENDER,
+			   	   VRE.MINIMI AS R_VRM_MINIMI,
+	   	   		   VRE.STATUS AS R_VRM_STATUS
+			FROM (SELECT 
+				   ROW_NUMBER() OVER(ORDER BY V.V_CREATE_DATE) AS ROWNUM,
+				   V.V_NO,
+				   V.MINIHOME_NO ,
+				   V.REPORT_CODE ,
+				   V.V_CREATE_DATE ,
+				   V.V_MODIFY_DATE ,
+				   V.V_CONTENT ,
+				   V.V_SECRET ,
+				   V.V_REPORT ,
+				   V.V_ACCESS ,
+				   V.V_STATUS,
+			   	   V.V_WRITER_NO AS M_USER_NO,
+			   	   M.USER_ID AS M_USER_ID,
+			   	   M.NAME AS M_NAME,
+			   	   M.PHONE AS M_PHONE,
+			   	   M.EMAIL AS M_EMAIL,
+			   	   M.SEARCH_ME AS M_SEARCH_ME,
+			   	   M.GENDER AS M_GENDER,
+			   	   M.MINIMI AS M_MINIMI,
+			   	   M.STATUS AS M_STATUS
+			FROM VISITOR V
+			INNER JOIN MINIHOME H ON (V.MINIHOME_NO = H.MINIHOME_NO)
+			INNER JOIN MEMBER M ON (M.USER_NO = V.V_WRITER_NO)
+			WHERE V.MINIHOME_NO = #{minihomeNo} AND V.V_STATUS = 'Y'
+			) SUB
+			LEFT OUTER JOIN (SELECT VRE_NO ,
+									V_NO ,
+									VRE_CREATE_DATE ,
+									VRE_MODIFY_DATE ,
+									VRE_CONTENT ,
+									VRE_SECRET ,
+									VRE_ACCESS ,
+									VRE_STATUS ,
+									VRE_DEPTH ,
+									VRE_GROUP ,
+									VRE_STEP ,
+									VRM.USER_NO,
+									VRM.USER_ID ,
+									VRM.NAME ,
+									VRM.PHONE ,
+									VRM.EMAIL ,
+									VRM.BIRTH ,
+									VRM.ADDRESS ,
+									VRM.SEARCH_ME ,
+									VRM.GENDER ,
+									VRM.MINIMI ,
+									VRM.STATUS 
+							FROM VISITOR_REFLY VRE
+							INNER JOIN MEMBER VRM ON (VRM.USER_NO = VRE.VRE_WRITER_NO)
+							WHERE 	VRE.VRE_STATUS = 'Y'
+							) VRE ON (SUB.V_NO = VRE.V_NO)
+			ORDER BY SUB.V_CREATE_DATE DESC
+	</select>
+	
+
+
+	
+	<insert id="insertReply">
+		INSERT INTO VISITOR_REFLY (
+		VRE_NO,
+		V_NO,
+		VRE_WRITER_NO ,
+		VRE_CREATE_DATE ,
+		VRE_MODIFY_DATE ,
+		VRE_CONTENT ,
+		VRE_SECRET ,
+		VRE_ACCESS ,
+		VRE_STATUS ,
+		VRE_DEPTH
+		)
+		VALUES(
+		(SELECT NEXTVAL('VRE_SEQ') FROM DUAL),
+		#{visitorNo},
+		#{writerNo},
+		DEFAULT,
+		DEFAULT,
+		#{content},
+		DEFAULT,
+		DEFAULT,
+		DEFAULT,
+		0
+		)
+	</insert>
+	
+	
+	<select id="findVisitorByNo" parameterType="_int" resultMap="visitorResultMap">
+		SELECT V_NO ,
+			   MINIHOME_NO ,
+			   REPORT_CODE ,
+			   V_CREATE_DATE ,
+			   V_MODIFY_DATE ,
+			   V_CONTENT ,
+			   V_SECRET ,
+			   V_REPORT ,
+			   V_ACCESS ,
+			   V_STATUS ,
+			   V_WRITER_NO AS M_USER_NO,
+			   M.USER_ID AS M_USER_ID,
+			   M.NAME AS M_NAME,
+			   M.PHONE AS M_PHONE,
+			   M.EMAIL AS M_EMAIL,
+			   M.BIRTH AS M_BIRTH,
+			   M.ADDRESS AS M_ADDRESS,
+			   M.SEARCH_ME AS M_SEARCH_ME,
+			   M.GENDER AS M_GENDER,
+			   M.MINIMI AS M_MINIMI
+		FROM VISITOR V
+		INNER JOIN MEMBER M ON (V.V_WRITER_NO = M.USER_NO)
+		WHERE V_NO = #{visitorNo} AND V_STATUS = 'Y'
+	</select>
+	
+	
+	<update id="updateVisitor">
+		UPDATE VISITOR 
+		SET 
+			V_CONTENT = #{content},
+			V_MODIFY_DATE = NOW()
+		WHERE V_NO = #{visitorNo}
+	</update>
+	
+	
+	<update id="deleteVisitor">
+		UPDATE VISITOR
+		SET
+			V_STATUS = #{status}
+		WHERE V_NO = #{visitorNo}
+	</update>
+	
+	<select id="findReportCategory" resultMap="reportCategoryResultMap">
+		SELECT CATEGORYCODE,
+			   CATEGORYNAME
+		FROM REPORT_CATEGORY
+	</select>
+	
+	
+	<insert id="insertReport">
+		INSERT INTO REPORT (
+		REPORT_NO,
+		CATEGORYCODE,
+		USER_ID,
+		CONTENT,
+		DATE,
+		STATUS,
+		ALLPK_NO,
+		REPORT_CODE
+		)
+		VALUES(
+		(SELECT NEXTVAL('REPORT_SEQ') FROM DUAL),
+		#{categoryCode},
+		#{userId},
+		#{content},
+		DEFAULT,
+		DEFAULT,
+		#{visitorNo},
+		#{reportCode}
+		)
+	</insert>
+	
+	
+	<select id="findUserByminihomeNo" resultMap="com.kh.world.member.model.mapper.MemberMapper.memberMinihomeResultmap">
+		SELECT MINIHOME_NO,
+			   PROFILE,
+			   INTRO,
+			   MOOD,
+			   MBTI,
+			   MINIROOM,
+			   THEME,
+			   MH_ACCESS ,
+			   M.USER_NO AS M_USER_NO,
+			   M.USER_ID AS M_USER_ID,
+			   M.NAME AS M_NAME,
+			   M.PHONE AS M_PHONE,
+			   M.EMAIL AS M_EMAIL,
+			   M.BIRTH AS M_BIRTH,
+			   M.ADDRESS AS M_ADDRESS,
+			   M.SEARCH_ME AS M_SEARCH_ME,
+			   M.GENDER AS M_GENDER,
+			   M.MINIMI AS M_MINIMI,
+			   M.CREATE_DATE AS M_CREATE_DATE,
+			   M.ACORN AS M_ACORN,
+			   M.STATUS AS M_STATUS
+		FROM MINIHOME MH
+		INNER JOIN MEMBER M ON (MH.USER_NO = M.USER_NO)
+		WHERE MINIHOME_NO = #{minihomeNo} AND M.STATUS = 'Y'
+	</select>
+	
+	<!-- 댓글 수정 -->
+	<update id="updateReply">
+		UPDATE VISITOR_REFLY 
+		SET
+			VRE_CONTENT = #{content},
+			VRE_MODIFY_DATE = NOW()
+		WHERE VRE_NO = #{vreNo} AND V_NO = #{visitorNo} AND VRE_WRITER_NO = #{userNo}
+	</update>
+	
+	<!-- 댓글 찾기 -->
+	<select id="findReplyByNo" resultMap="visitorReplyResultMap">
+		SELECT VRE_NO,
+			   V_NO,
+			   VRE_WRITER_NO,
+			   VRE_CREATE_DATE	,
+			   VRE_MODIFY_DATE ,
+			   VRE_CONTENT ,
+			   VRE_SECRET ,
+			   VRE_ACCESS ,
+			   VRE_STATUS ,
+			   VRE_DEPTH ,
+			   VRE_GROUP ,
+			   VRE_STEP 
+		FROM VISITOR_REFLY
+		WHERE VRE_NO = #{vreNo}
+	</select>
+	
+	<update id="deleteReply">
+		UPDATE VISITOR_REFLY 
+		SET
+			VRE_STATUS = #{status}
+		WHERE VRE_NO = #{vreNo} AND VRE_WRITER_NO = #{userNo}
+	</update>
+
+
+	<insert id="insertDepthReply">
+		INSERT INTO VISITOR_REFLY (
+		VRE_NO ,
+		V_NO ,
+		VRE_WRITER_NO ,
+		VRE_CREATE_DATE ,
+		VRE_MODIFY_DATE ,
+		VRE_CONTENT ,
+		VRE_SECRET ,
+		VRE_ACCESS ,
+		VRE_STATUS ,
+		VRE_DEPTH ,
+		VRE_GROUP ,
+		VRE_STEP 
+		)
+		VALUES(
+		(SELECT NEXTVAL('VRE_SEQ') FROM DUAL),
+		#{visitorNo},
+		#{writer.no},
+		DEFAULT,
+		DEFAULT,
+		#{content},
+		DEFAULT,
+		DEFAULT,
+		DEFAULT,
+		1,
+		#{vreNo},
+		(SELECT COUNT(*) FROM VISITOR_REFLY VR WHERE VRE_GROUP = #{vreNo})
+		)		
+		
+	</insert>
+	
+	<update id="updateDepth">
+		UPDATE VISITOR_REFLY 
+		SET 
+			VRE_CONTENT = #{content},
+			VRE_MODIFY_DATE = NOW()
+		WHERE VRE_NO = #{vreNo} AND VRE_GROUP = #{group} AND VRE_STEP = #{step}
+	</update>
+	
+	<update id="deleteDepth">
+		UPDATE VISITOR_REFLY 
+		SET 
+			VRE_STATUS = #{status}
+		WHERE VRE_NO = #{vreNo} AND VRE_GROUP = #{group} AND VRE_STEP = #{step}
+	</update>
+
+</mapper>

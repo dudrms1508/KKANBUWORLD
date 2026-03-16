@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.kh.world.gift.model.mapper.GiftMapper">
+
+	<resultMap id="giftRelatedResultMap" type="GiftRelated">
+		<id property="ilchonIdx" column="ILCHON_IDX" />
+		<result property="userNo" column="USER_NO" />
+<!-- 		<result property="ilchonName" column="ILCHON_NAME" /> -->
+		<result property="ilchonNick" column="ILCHON_NICK" />
+		<result property="ilchonCate" column="ILCHON_CATE" />
+		<result property="ilchonStatus" column="ILCHON_STATUS" />
+		<association property="ilchonMember" javaType="Member" columnPrefix="M_" resultMap="ilchonMemberResultMap"/>
+	</resultMap>
+	
+	<resultMap id="ilchonMemberResultMap" type="Member">
+		<id property="no" column="USER_NO"/>
+		<result property="id" column="USER_ID"/>
+		<result property="password" column="USER_PWD"/>
+		<result property="name" column="NAME"/>
+		<result property="role" column="ROLE"/>
+		<result property="phone" column="PHONE"/>
+		<result property="email" column="EMAIL"/>
+		<result property="birth" column="BIRTH"/>
+		<result property="address" column="ADDRESS"/>
+		<result property="searchMe" column="SEARCH_ME"/>
+		<result property="gender" column="GENDER"/>
+		<result property="minimi" column="MINIMI"/>
+		<result property="createDate" column="CREATE_DATE"/>
+		<result property="acorn" column="ACORN"/>
+		<result property="status" column="STATUS"/>
+	</resultMap>
+	
+	
+	<resultMap  id="giftProductResultMap" type="GiftProduct">
+		<id property="code" column="PRODUCT_CODE" />
+		<result property="categoryCode" column="CATEGORY_CODE" />
+		<result property="name" column="PRODUCT_NAME" />
+		<result property="price" column="PRODUCT_PRICE" />
+		<result property="date" column="PRODUCT_DATE" />
+		<result property="status" column="STATUS" />
+		<result property="file" column="PRODUCT_FILE" />
+		<result property="url" column="PRODUCT_URL" />
+	</resultMap>
+
+	<resultMap id="memberResultMap" type="Member">
+		<id property="no" column="USER_NO"/>
+		<result property="id" column="USER_ID"/>
+		<result property="password" column="USER_PWD"/>
+		<result property="name" column="NAME"/>
+		<result property="role" column="ROLE"/>
+		<result property="phone" column="PHONE"/>
+		<result property="email" column="EMAIL"/>
+		<result property="birth" column="BIRTH"/>
+		<result property="address" column="ADDRESS"/>
+		<result property="searchMe" column="SEARCH_ME"/>
+		<result property="gender" column="GENDER"/>
+		<result property="minimi" column="MINIMI"/>
+		<result property="createDate" column="CREATE_DATE"/>
+		<result property="acorn" column="ACORN"/>
+		<result property="status" column="STATUS"/>
+	</resultMap>
+	
+	<resultMap id="giftResultMap" type="Gift">
+		<id property="giftNo" column="GIFT_NO" />
+		<result property="senderNo" column="SENDER_NO" />
+		<result property="receiverNo" column="RECEIVER_NO" />
+		<result property="productCode" column="PRODUCT_CODE" />
+		<result property="content" column="SEND_CONTENT" />
+		<result property="sendDate" column="GIFT_DATE" />
+		<result property="progress" column="GIFT_PROGRESS" />
+		<result property="cancel" column="GIFT_CANCEL" />
+	</resultMap>
+
+	
+	<resultMap id="giftAddMemberResultMap" type="GiftAddMember">
+		<id property="giftNo" column="GIFT_NO" />
+		<result property="content" column="SEND_CONTENT" />
+		<result property="sendDate" column="GIFT_DATE" />
+		<result property="progress" column="GIFT_PROGRESS" />
+		<result property="cancel" column="GIFT_CANCEL" />
+		<!-- 상품매핑 -->
+		<association property="product" javaType="GiftProduct" columnPrefix="P_" 
+					resultMap="giftProductResultMap"/>
+		<!-- 멤버매핑 -->
+		<association property="sender" javaType="Member" columnPrefix="S_" 
+					resultMap="memberResultMap"/>
+		<association property="receiver" javaType="Member" columnPrefix="R_"
+					resultMap="memberResultMap"/>
+	</resultMap>
+	
+	
+	
+	
+	<select id="selectRelatedAll" parameterType="_int" resultMap="giftRelatedResultMap">
+		SELECT I.ILCHON_IDX,
+			   I.USER_NO,
+			   I.ILCHON_NICK,
+			   I.ILCHON_CATE,
+			   I.ILCHON_STATUS,
+			   I.ILCHON_NO AS "M_USER_NO",
+			   M.USER_ID AS "M_USER_ID",
+			   M.NAME AS M_NAME,
+			   M.SEARCH_ME AS M_SEARCH_ME,
+			   M.GENDER AS "M_GENDER"
+		FROM ILCHON I
+		INNER JOIN MEMBER M ON(I.ILCHON_NO = M.USER_NO)
+		WHERE I.USER_NO = #{no} AND I.ILCHON_STATUS = 'Y' AND M.STATUS = 'Y'
+		ORDER BY M.NAME DESC
+	</select>
+	
+	
+	<insert id="insertGift" parameterType="map">
+		INSERT INTO GIFT (
+		GIFT_NO,
+		SENDER_NO,
+		RECEIVER_NO,
+		PRODUCT_CODE,
+		SEND_CONTENT,
+		GIFT_DATE,
+		GIFT_PROGRESS,
+		GIFT_CANCEL
+		)
+		VALUES (
+		(SELECT NEXTVAL('GIFT_SEQ') FROM DUAL),
+		#{userNo},
+		#{receiverNo},
+		#{productCode},
+		#{content},
+		DEFAULT,
+		DEFAULT,
+		DEFAULT
+		)
+	</insert>
+	
+	
+	<!-- 상품코드로 상품 찾아오기 -->
+	<select id="findProductByCode" parameterType="_int" resultMap="giftProductResultMap">
+		SELECT PRODUCT_CODE,
+			   CATEGORY_CODE,
+			   PRODUCT_NAME,
+			   PRODUCT_PRICE,
+			   PRODUCT_DATE,
+			   STATUS,
+			   PRODUCT_FILE,
+			   PRODUCT_URL
+		FROM PRODUCT
+		WHERE PRODUCT_CODE = #{productCode} AND STATUS = 'Y'
+	</select>
+	
+	<!-- 내가 이 아이템을 가지고 있는지 -->
+	<select id="findHaveCount" parameterType="_int" resultType="_int">
+		SELECT COUNT(*)
+		FROM MyItem
+		WHERE USER_NO = #{receiverNo} AND PRODCUT_CODE = #{productCode}
+	</select>
+
+
+	<!-- 도토리 개수 차감 -->
+	<update id="updateMemberAcorn" parameterType="_int">
+		UPDATE MEMBER
+		SET
+			ACORN = ACORN - #{minusAcorn}
+		WHERE USER_NO = #{userNo}
+	</update>
+	
+	
+	<select id="findMemberByNo" parameterType="_int" resultMap="memberResultMap">
+		SELECT USER_NO ,
+			   USER_ID ,
+			   USER_PWD ,
+			   NAME,
+			   ROLE,
+			   PHONE,
+			   EMAIL,
+			   BIRTH,
+			   ADDRESS,
+			   SEARCH_ME ,
+			   GENDER,
+			   MINIMI ,
+			   CREATE_DATE ,
+			   ACORN ,
+			   STATUS 
+		FROM MEMBER
+		WHERE USER_NO = #{userNo} AND STATUS = 'Y'	
+	</select>
+	
+	<select id="findGiftByUserNo" parameterType="_int" resultMap="giftResultMap">
+	SELECT GIFT_NO,
+		   SENDER_NO,
+		   RECEIVER_NO,
+		   PRODUCT_CODE,
+		   SEND_CONTENT,
+		   GIFT_DATE,
+		   GIFT_PROGRESS,
+		   GIFT_CANCEL
+	FROM   GIFT
+	WHERE  RECEIVER_NO = #{userNo} 
+		   AND GIFT_PROGRESS = 'H' AND GIFT_CANCEL = 'D'
+	</select>
+	
+	<!-- 홈에다가 로그인한 사람이 선물받은 리스트가 있는지 확인시켜주는 쿼리 -->
+	<select id="findGiftMemberByUserNo" parameterType="_int" resultMap="giftAddMemberResultMap">
+		SELECT G.GIFT_NO,
+			   G.PRODUCT_CODE ,
+			   G.SEND_CONTENT ,
+			   G.GIFT_DATE ,
+			   G.GIFT_PROGRESS ,
+			   G.GIFT_CANCEL ,
+		  	   G.SENDER_NO AS S_USER_NO,
+		   	   S.USER_ID AS S_USER_ID,
+		   	   S.NAME AS S_NAME,
+		   	   S.PHONE AS S_PHONE,
+		   	   S.EMAIL AS S_EMAIL,
+		   	   S.BIRTH AS S_BIRTH,
+		   	   S.ADDRESS AS S_ADDRESS,
+		   	   S.SEARCH_ME AS S_SEARCH_ME,
+		   	   S.GENDER AS S_GENDER,
+		   	   S.MINIMI AS S_MINIMI,
+		   	   S.ACORN AS S_ACORN,
+		 	   G.RECEIVER_NO AS R_USER_NO,
+		  	   R.USER_ID AS R_USER_ID,
+		   	   R.NAME AS R_NAME,
+		   	   R.PHONE AS R_PHONE,
+		   	   R.EMAIL AS R_EMAIL,
+		   	   R.BIRTH AS R_BIRTH,
+		   	   R.ADDRESS AS R_ADDRESS,
+		   	   R.SEARCH_ME AS R_SEARCH_ME,
+		   	   R.GENDER AS R_GENDER,
+		   	   R.MINIMI AS R_MINIMI,
+		   	   R.ACORN AS R_ACORN
+		FROM  GIFT G
+		INNER JOIN MEMBER S ON (G.SENDER_NO = S.USER_NO)
+		INNER JOIN MEMBER R ON (G.RECEIVER_NO = R.USER_NO)
+		WHERE RECEIVER_NO = #{userNo}
+	  		  AND GIFT_PROGRESS = 'H' AND GIFT_CANCEL = 'D'
+	</select>
+	
+	<!-- 로그인멤버의 선물 총 개수 -->
+	<select id="selectGiftListCount" parameterType="_int" resultType="_int">
+		SELECT COUNT(*)
+		FROM GIFT
+		WHERE RECEIVER_NO = #{userNo}
+		      AND GIFT_PROGRESS = 'H' AND GIFT_CANCEL = 'D'
+	</select>
+	
+	<!-- between 사용 -->
+<!-- 	
+	<select id="selectGiftListPaging" parameterType="_int" resultMap="giftAddMemberResultMap">
+		SELECT *
+		FROM 
+		(SELECT ROW_NUMBER() OVER (ORDER BY GIFT_DATE) AS "ROWNUM",
+			   G.GIFT_NO,
+			   G.PRODUCT_CODE ,
+			   G.SEND_CONTENT ,
+			   G.GIFT_DATE ,
+			   G.GIFT_PROGRESS ,
+			   G.GIFT_CANCEL ,
+		  	   G.SENDER_NO AS S_USER_NO,
+		   	   S.USER_ID AS S_USER_ID,
+		   	   S.NAME AS S_NAME,
+		   	   S.PHONE AS S_PHONE,
+		   	   S.EMAIL AS S_EMAIL,
+		   	   S.BIRTH AS S_BIRTH,
+		   	   S.ADDRESS AS S_ADDRESS,
+		   	   S.SEARCH_ME AS S_SEARCH_ME,
+		   	   S.GENDER AS S_GENDER,
+		   	   S.MINIMI AS S_MINIMI,
+		   	   S.ACORN AS S_ACORN,
+		 	   G.RECEIVER_NO AS R_USER_NO,
+		  	   R.USER_ID AS R_USER_ID,
+		   	   R.NAME AS R_NAME,
+		   	   R.PHONE AS R_PHONE,
+		   	   R.EMAIL AS R_EMAIL,
+		   	   R.BIRTH AS R_BIRTH,
+		   	   R.ADDRESS AS R_ADDRESS,
+		   	   R.SEARCH_ME AS R_SEARCH_ME,
+		   	   R.GENDER AS R_GENDER,
+		   	   R.MINIMI AS R_MINIMI,
+		   	   R.ACORN AS R_ACORN
+		FROM  GIFT G
+		INNER JOIN MEMBER S ON (G.SENDER_NO = S.USER_NO)
+		INNER JOIN MEMBER R ON (G.RECEIVER_NO = R.USER_NO)
+		WHERE RECEIVER_NO = #{no}
+			  AND GIFT_PROGRESS = 'H' AND GIFT_CANCEL = 'D') SUB
+		WHERE SUB.ROWNUM BETWEEN #{startList} AND #{endList} 
+	</select>
+ -->
+	
+	<!-- rowBunds로 giftList뷰로 넘겨줌 -->
+	<select id="getGiftMemberBoundsByUserNo" resultMap="giftAddMemberResultMap">
+		SELECT G.GIFT_NO,
+			   G.SEND_CONTENT ,
+			   G.GIFT_DATE ,
+			   G.GIFT_PROGRESS ,
+			   G.GIFT_CANCEL ,
+		  	   G.SENDER_NO AS S_USER_NO,
+		   	   S.USER_ID AS S_USER_ID,
+		   	   S.NAME AS S_NAME,
+		   	   S.PHONE AS S_PHONE,
+		   	   S.EMAIL AS S_EMAIL,
+		   	   S.BIRTH AS S_BIRTH,
+		   	   S.ADDRESS AS S_ADDRESS,
+		   	   S.SEARCH_ME AS S_SEARCH_ME,
+		   	   S.GENDER AS S_GENDER,
+		   	   S.MINIMI AS S_MINIMI,
+		   	   S.ACORN AS S_ACORN,
+		 	   G.RECEIVER_NO AS R_USER_NO,
+		  	   R.USER_ID AS R_USER_ID,
+		   	   R.NAME AS R_NAME,
+		   	   R.PHONE AS R_PHONE,
+		   	   R.EMAIL AS R_EMAIL,
+		   	   R.BIRTH AS R_BIRTH,
+		   	   R.ADDRESS AS R_ADDRESS,
+		   	   R.SEARCH_ME AS R_SEARCH_ME,
+		   	   R.GENDER AS R_GENDER,
+		   	   R.MINIMI AS R_MINIMI,
+		   	   R.ACORN AS R_ACORN,
+		   	   G.PRODUCT_CODE AS P_PRODUCT_CODE,
+		   	   P.CATEGORY_CODE AS P_CATEGORY_CODE,
+		   	   P.PRODUCT_NAME AS P_PRODUCT_NAME,
+		   	   P.PRODUCT_PRICE AS P_PRODUCT_PRICE,
+		   	   P.PRODUCT_DATE AS P_PRODUCT_DATE,
+		   	   P.STATUS AS P_STATUS,
+		   	   P.PRODUCT_FILE AS P_PRODUCT_FILE,
+		   	   P.PRODUCT_URL AS P_PRODUCT_URL
+		FROM  GIFT G
+		INNER JOIN MEMBER S ON (G.SENDER_NO = S.USER_NO)
+		INNER JOIN MEMBER R ON (G.RECEIVER_NO = R.USER_NO)
+		INNER JOIN PRODUCT P ON (G.PRODUCT_CODE = P.PRODUCT_CODE)
+		WHERE RECEIVER_NO = #{userNo}
+	  		  AND GIFT_PROGRESS = 'H' AND GIFT_CANCEL = 'D'
+	</select>
+
+	<!-- giftNo에 해당하는 상품정보랑 선물내용가져오기 -->
+	<select id="findGiftByGiftNo" parameterType="_int" resultMap="giftAddMemberResultMap">
+		SELECT G.GIFT_NO,
+			   G.SEND_CONTENT ,
+			   G.GIFT_DATE ,
+			   G.GIFT_PROGRESS ,
+			   G.GIFT_CANCEL ,
+		  	   G.SENDER_NO AS S_USER_NO,
+		   	   S.USER_ID AS S_USER_ID,
+		   	   S.NAME AS S_NAME,
+		   	   S.PHONE AS S_PHONE,
+		   	   S.EMAIL AS S_EMAIL,
+		   	   S.BIRTH AS S_BIRTH,
+		   	   S.ADDRESS AS S_ADDRESS,
+		   	   S.SEARCH_ME AS S_SEARCH_ME,
+		   	   S.GENDER AS S_GENDER,
+		   	   S.MINIMI AS S_MINIMI,
+		   	   S.ACORN AS S_ACORN,
+		 	   G.RECEIVER_NO AS R_USER_NO,
+		  	   R.USER_ID AS R_USER_ID,
+		   	   R.NAME AS R_NAME,
+		   	   R.PHONE AS R_PHONE,
+		   	   R.EMAIL AS R_EMAIL,
+		   	   R.BIRTH AS R_BIRTH,
+		   	   R.ADDRESS AS R_ADDRESS,
+		   	   R.SEARCH_ME AS R_SEARCH_ME,
+		   	   R.GENDER AS R_GENDER,
+		   	   R.MINIMI AS R_MINIMI,
+		   	   R.ACORN AS R_ACORN,
+		   	   G.PRODUCT_CODE AS P_PRODUCT_CODE,
+		   	   P.CATEGORY_CODE AS P_CATEGORY_CODE,
+		   	   P.PRODUCT_NAME AS P_PRODUCT_NAME,
+		   	   P.PRODUCT_PRICE AS P_PRODUCT_PRICE,
+		   	   P.PRODUCT_DATE AS P_PRODUCT_DATE,
+		   	   P.STATUS AS P_STATUS,
+		   	   P.PRODUCT_FILE AS P_PRODUCT_FILE,
+		   	   P.PRODUCT_URL AS P_PRODUCT_URL
+		FROM  GIFT G
+		INNER JOIN MEMBER S ON (G.SENDER_NO = S.USER_NO)
+		INNER JOIN MEMBER R ON (G.RECEIVER_NO = R.USER_NO)
+		INNER JOIN PRODUCT P ON (G.PRODUCT_CODE = P.PRODUCT_CODE)
+		WHERE GIFT_NO = #{giftNo}
+<!-- 		AND GIFT_PROGRESS = 'H' AND GIFT_CANCEL = 'D' -->
+	</select>
+
+
+	<!-- MYITEM에 값 넣어주기 -->
+	<insert id="insertMyItem">
+		INSERT INTO MyItem(
+		USER_NO ,
+		PRODCUT_CODE
+		)
+		VALUES(
+		#{userNo},
+		#{productCode}
+		)
+	
+	</insert>
+
+
+	<update id="updateGiftProgress">
+		UPDATE GIFT
+		SET 
+			GIFT_PROGRESS = #{status}
+		WHERE GIFT_NO = #{giftNo}
+	</update>
+
+	<update id="plusMemberAcorn">
+		UPDATE MEMBER
+		SET
+			ACORN = ACORN + #{price}
+		WHERE USER_NO = #{userNo}
+	</update>
+
+	<!-- 보낸 선물내역 다 가져오기 -->	
+	<select id="findSendGiftHistoryByNo" parameterType="_int" resultMap="giftAddMemberResultMap">
+	SELECT G.GIFT_NO,
+		   G.SEND_CONTENT ,
+		   G.GIFT_DATE ,
+		   G.GIFT_PROGRESS ,
+		   G.GIFT_CANCEL ,
+	  	   G.SENDER_NO AS S_USER_NO,
+	   	   S.USER_ID AS S_USER_ID,
+	   	   S.NAME AS S_NAME,
+	   	   S.PHONE AS S_PHONE,
+	   	   S.EMAIL AS S_EMAIL,
+	   	   S.BIRTH AS S_BIRTH,
+	   	   S.ADDRESS AS S_ADDRESS,
+	   	   S.SEARCH_ME AS S_SEARCH_ME,
+	   	   S.GENDER AS S_GENDER,
+	   	   S.MINIMI AS S_MINIMI,
+	   	   S.ACORN AS S_ACORN,
+	 	   G.RECEIVER_NO AS R_USER_NO,
+	  	   R.USER_ID AS R_USER_ID,
+	   	   R.NAME AS R_NAME,
+	   	   R.PHONE AS R_PHONE,
+	   	   R.EMAIL AS R_EMAIL,
+	   	   R.BIRTH AS R_BIRTH,
+	   	   R.ADDRESS AS R_ADDRESS,
+	   	   R.SEARCH_ME AS R_SEARCH_ME,
+	   	   R.GENDER AS R_GENDER,
+	   	   R.MINIMI AS R_MINIMI,
+	   	   R.ACORN AS R_ACORN,
+	   	   G.PRODUCT_CODE AS P_PRODUCT_CODE,
+	   	   P.CATEGORY_CODE AS P_CATEGORY_CODE,
+	   	   P.PRODUCT_NAME AS P_PRODUCT_NAME,
+	   	   P.PRODUCT_PRICE AS P_PRODUCT_PRICE,
+	   	   P.PRODUCT_DATE AS P_PRODUCT_DATE,
+	   	   P.STATUS AS P_STATUS,
+	   	   P.PRODUCT_FILE AS P_PRODUCT_FILE,
+	   	   P.PRODUCT_URL AS P_PRODUCT_URL
+	FROM  GIFT G
+	INNER JOIN MEMBER S ON (G.SENDER_NO = S.USER_NO)
+	INNER JOIN MEMBER R ON (G.RECEIVER_NO = R.USER_NO)
+	INNER JOIN PRODUCT P ON (G.PRODUCT_CODE = P.PRODUCT_CODE)
+	WHERE G.SENDER_NO = #{userNo}
+	ORDER BY GIFT_DATE DESC
+	</select>
+	
+	<!-- 해당 유저가 선물한 선물리스트 개수 -->
+	<select id="countSendGiftByNo" resultType="_int">
+		SELECT COUNT(*)
+		FROM GIFT
+		WHERE SENDER_NO = #{userNo}
+	</select>
+	
+	<!-- 기간별 조회된 리스트 개수 -->
+	<select id="countSendGiftBetween" resultType="_int">
+		SELECT COUNT(*)
+		FROM GIFT
+		WHERE SENDER_NO  = #{userNo}
+		AND DATE_FORMAT(GIFT_DATE, '%Y-%m-%d') BETWEEN STR_TO_DATE(#{date1}, '%Y-%m-%d') AND STR_TO_DATE(#{date2}, '%Y-%m-%d')
+		ORDER BY GIFT_DATE DESC
+	</select>
+	
+	<select id="findsendGiftHistoryBetween" resultMap="giftAddMemberResultMap">
+		SELECT G.GIFT_NO,
+			   G.SEND_CONTENT ,
+			   G.GIFT_DATE ,
+			   G.GIFT_PROGRESS ,
+			   G.GIFT_CANCEL ,
+		  	   G.SENDER_NO AS S_USER_NO,
+		   	   S.USER_ID AS S_USER_ID,
+		   	   S.NAME AS S_NAME,
+		   	   S.PHONE AS S_PHONE,
+		   	   S.EMAIL AS S_EMAIL,
+		   	   S.BIRTH AS S_BIRTH,
+		   	   S.ADDRESS AS S_ADDRESS,
+		   	   S.SEARCH_ME AS S_SEARCH_ME,
+		   	   S.GENDER AS S_GENDER,
+		   	   S.MINIMI AS S_MINIMI,
+		   	   S.ACORN AS S_ACORN,
+		 	   G.RECEIVER_NO AS R_USER_NO,
+		  	   R.USER_ID AS R_USER_ID,
+		   	   R.NAME AS R_NAME,
+		   	   R.PHONE AS R_PHONE,
+		   	   R.EMAIL AS R_EMAIL,
+		   	   R.BIRTH AS R_BIRTH,
+		   	   R.ADDRESS AS R_ADDRESS,
+		   	   R.SEARCH_ME AS R_SEARCH_ME,
+		   	   R.GENDER AS R_GENDER,
+		   	   R.MINIMI AS R_MINIMI,
+		   	   R.ACORN AS R_ACORN,
+		   	   G.PRODUCT_CODE AS P_PRODUCT_CODE,
+		   	   P.CATEGORY_CODE AS P_CATEGORY_CODE,
+		   	   P.PRODUCT_NAME AS P_PRODUCT_NAME,
+		   	   P.PRODUCT_PRICE AS P_PRODUCT_PRICE,
+		   	   P.PRODUCT_DATE AS P_PRODUCT_DATE,
+		   	   P.STATUS AS P_STATUS,
+		   	   P.PRODUCT_FILE AS P_PRODUCT_FILE,
+		   	   P.PRODUCT_URL AS P_PRODUCT_URL
+		FROM  GIFT G
+		INNER JOIN MEMBER S ON (G.SENDER_NO = S.USER_NO)
+		INNER JOIN MEMBER R ON (G.RECEIVER_NO = R.USER_NO)
+		INNER JOIN PRODUCT P ON (G.PRODUCT_CODE = P.PRODUCT_CODE)
+		WHERE G.SENDER_NO = #{userNo}
+		AND DATE_FORMAT(GIFT_DATE, '%Y-%m-%d') BETWEEN STR_TO_DATE(#{date1}, '%Y-%m-%d') AND STR_TO_DATE(#{date2}, '%Y-%m-%d')
+		ORDER BY GIFT_DATE DESC
+	</select>
+	
+	
+	<!-- 해당 유저가 받은 선물리스트 개수 -->
+	<select id="countReceiveGiftByNo" resultType="_int">
+		SELECT COUNT(*)
+		FROM GIFT
+		WHERE RECEIVER_NO = #{userNo}
+	</select>
+	
+	<!-- 유저가 받은 선물리스트 전부 -->
+	<select id="findReceiveGiftHistoryByNo" parameterType="_int" resultMap="giftAddMemberResultMap">
+		SELECT G.GIFT_NO,
+			   G.SEND_CONTENT ,
+			   G.GIFT_DATE ,
+			   G.GIFT_PROGRESS ,
+			   G.GIFT_CANCEL ,
+		  	   G.SENDER_NO AS S_USER_NO,
+		   	   S.USER_ID AS S_USER_ID,
+		   	   S.NAME AS S_NAME,
+		   	   S.PHONE AS S_PHONE,
+		   	   S.EMAIL AS S_EMAIL,
+		   	   S.BIRTH AS S_BIRTH,
+		   	   S.ADDRESS AS S_ADDRESS,
+		   	   S.SEARCH_ME AS S_SEARCH_ME,
+		   	   S.GENDER AS S_GENDER,
+		   	   S.MINIMI AS S_MINIMI,
+		   	   S.ACORN AS S_ACORN,
+		 	   G.RECEIVER_NO AS R_USER_NO,
+		  	   R.USER_ID AS R_USER_ID,
+		   	   R.NAME AS R_NAME,
+		   	   R.PHONE AS R_PHONE,
+		   	   R.EMAIL AS R_EMAIL,
+		   	   R.BIRTH AS R_BIRTH,
+		   	   R.ADDRESS AS R_ADDRESS,
+		   	   R.SEARCH_ME AS R_SEARCH_ME,
+		   	   R.GENDER AS R_GENDER,
+		   	   R.MINIMI AS R_MINIMI,
+		   	   R.ACORN AS R_ACORN,
+		   	   G.PRODUCT_CODE AS P_PRODUCT_CODE,
+		   	   P.CATEGORY_CODE AS P_CATEGORY_CODE,
+		   	   P.PRODUCT_NAME AS P_PRODUCT_NAME,
+		   	   P.PRODUCT_PRICE AS P_PRODUCT_PRICE,
+		   	   P.PRODUCT_DATE AS P_PRODUCT_DATE,
+		   	   P.STATUS AS P_STATUS,
+		   	   P.PRODUCT_FILE AS P_PRODUCT_FILE,
+		   	   P.PRODUCT_URL AS P_PRODUCT_URL
+		FROM  GIFT G
+		INNER JOIN MEMBER S ON (G.SENDER_NO = S.USER_NO)
+		INNER JOIN MEMBER R ON (G.RECEIVER_NO = R.USER_NO)
+		INNER JOIN PRODUCT P ON (G.PRODUCT_CODE = P.PRODUCT_CODE)
+		WHERE G.RECEIVER_NO  = #{userNo}
+		ORDER BY GIFT_DATE DESC
+	</select>
+	
+	
+	<select id="countReceiveGiftBetween" resultType="_int">
+		SELECT COUNT(*)
+		FROM GIFT
+		WHERE RECEIVER_NO = #{userNo}
+		AND DATE_FORMAT(GIFT_DATE, '%Y-%m-%d') BETWEEN STR_TO_DATE(#{date1}, '%Y-%m-%d') AND STR_TO_DATE(#{date2}, '%Y-%m-%d')
+		ORDER BY GIFT_DATE DESC
+	</select>
+	
+	<select id="findReceiveGiftHistoryBetween" resultMap="giftAddMemberResultMap">
+		SELECT G.GIFT_NO,
+			   G.SEND_CONTENT ,
+			   G.GIFT_DATE ,
+			   G.GIFT_PROGRESS ,
+			   G.GIFT_CANCEL ,
+		  	   G.SENDER_NO AS S_USER_NO,
+		   	   S.USER_ID AS S_USER_ID,
+		   	   S.NAME AS S_NAME,
+		   	   S.PHONE AS S_PHONE,
+		   	   S.EMAIL AS S_EMAIL,
+		   	   S.BIRTH AS S_BIRTH,
+		   	   S.ADDRESS AS S_ADDRESS,
+		   	   S.SEARCH_ME AS S_SEARCH_ME,
+		   	   S.GENDER AS S_GENDER,
+		   	   S.MINIMI AS S_MINIMI,
+		   	   S.ACORN AS S_ACORN,
+		 	   G.RECEIVER_NO AS R_USER_NO,
+		  	   R.USER_ID AS R_USER_ID,
+		   	   R.NAME AS R_NAME,
+		   	   R.PHONE AS R_PHONE,
+		   	   R.EMAIL AS R_EMAIL,
+		   	   R.BIRTH AS R_BIRTH,
+		   	   R.ADDRESS AS R_ADDRESS,
+		   	   R.SEARCH_ME AS R_SEARCH_ME,
+		   	   R.GENDER AS R_GENDER,
+		   	   R.MINIMI AS R_MINIMI,
+		   	   R.ACORN AS R_ACORN,
+		   	   G.PRODUCT_CODE AS P_PRODUCT_CODE,
+		   	   P.CATEGORY_CODE AS P_CATEGORY_CODE,
+		   	   P.PRODUCT_NAME AS P_PRODUCT_NAME,
+		   	   P.PRODUCT_PRICE AS P_PRODUCT_PRICE,
+		   	   P.PRODUCT_DATE AS P_PRODUCT_DATE,
+		   	   P.STATUS AS P_STATUS,
+		   	   P.PRODUCT_FILE AS P_PRODUCT_FILE,
+		   	   P.PRODUCT_URL AS P_PRODUCT_URL
+		FROM  GIFT G
+		INNER JOIN MEMBER S ON (G.SENDER_NO = S.USER_NO)
+		INNER JOIN MEMBER R ON (G.RECEIVER_NO = R.USER_NO)
+		INNER JOIN PRODUCT P ON (G.PRODUCT_CODE = P.PRODUCT_CODE)
+		WHERE G.RECEIVER_NO = #{userNo}
+		AND DATE_FORMAT(GIFT_DATE, '%Y-%m-%d') BETWEEN STR_TO_DATE(#{date1}, '%Y-%m-%d') AND STR_TO_DATE(#{date2}, '%Y-%m-%d')
+		ORDER BY GIFT_DATE DESC
+	</select>
+	
+	
+</mapper>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.spring.helloworld.GuestBoardMapper">
+
+		 
+	
+		 
+	<select id="select_all_by_home_id" resultType="GuestBoardVO">
+		select * from
+		${gb_board}
+		where ${col_home_id} = #{home_id}
+		order by ${col_g_bno} desc
+	</select>
+	
+	<select id = "select_all_homeid" resultType="GuestBoardVO">
+	
+	select 
+  	 b.g_bno, b.userid, b.user_name, b.g_content, b.g_date, b.g_secret, b.home_id, b.g_reply, b.user_photo 
+  	 from(
+  	 	select rownum rn, a.*
+  	 	from(
+  	 		select * from ${gb_board} where ${col_home_id} = #{home_id} 
+  	 		order by ${col_g_bno} desc
+  	 	)a
+  	 ) b
+		where rn between #{start} and #{end} 
+	
+	
+	</select>
+	
+	 <select id = "guest_total_count" resultType = "Integer">
+  	SELECT COUNT(*) FROM ${gb_board} where ${col_home_id} = #{home_id} 
+  </select>
+
+	<select id="select_all" resultType="GuestBoardVO">
+		select * from ${gb_board} order by ${col_g_bno} desc
+	</select>
+	<insert id="insert">
+		insert into ${gb_board}(${col_userid}, ${col_user_name}, ${col_g_content},
+		${col_g_secret}, ${col_home_id}, ${col_user_photo})
+		values( #{userid}, #{user_name}, #{g_content}, #{g_secret}, #{home_id}, #{user_photo} )
+	</insert>
+	<update id="update">
+		update ${gb_board}
+		set ${col_g_content} = #{g_content}
+		where ${col_g_bno} = #{g_bno}
+	</update>
+	<delete id="delete">
+		delete from ${gb_board}
+		where ${col_g_bno} = #{g_bno}
+	</delete>
+
+	<update id="replyinsert">
+		update ${gb_board}
+		set ${col_g_reply} = #{g_reply}
+		where ${col_g_bno} = #{g_bno}
+
+	</update>
+</mapper>

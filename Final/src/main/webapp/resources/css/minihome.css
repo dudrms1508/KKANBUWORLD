@@ -1,0 +1,419 @@
+.tap_button{
+	width : 70px;
+	height: 40px;
+	color: white;
+	float:left;
+	position: relative;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius:5px;
+	border-top: 1px solid grey;
+	border-bottom: 1px solid grey;
+	border-right: 1px solid grey;
+	margin-bottom: 1px;
+}
+
+.tap_button.on{
+	width : 70px;
+	height: 40px;
+	background-color: white;
+	color: black;
+	float:left;
+	position: relative;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius:5px;
+	border-top: 1px solid grey;
+	border-bottom: 1px solid grey;
+	border-right: 1px solid grey;
+	margin-bottom: 1px;
+}
+
+.left_side_down.on{
+	/* border: 1px solid red; */
+	display: block;
+}
+
+.left_side_down{
+	display: none;
+}
+
+.btnMngFolder{
+	width: 190px;
+	height:30px;
+	font-size: 100%;
+	border : 1px solid grey;
+	background-color: white;
+	border-radius:3px;
+	margin: 0px 20px 0px auto;
+	outline: 0px;
+}
+
+.lblVisitCnt{
+	font-size: 50%;
+	font-family: Verdana;
+	color: #504E48;
+}
+
+.lblBoard{
+	font-weight:bold;
+	color:#50BCDF;
+}
+
+a{
+	font-family: 'Open Sans';
+	font-size: 90%;
+}
+
+#left_side{
+	background-color: #f1f3f5;
+	width : 220px;
+	height: 565px;
+	margin: 69px 60px;
+	position: absolute;
+	border-radius: 10px;
+	
+}
+
+#left_side_upper{
+	background-color: #f1f3f5;
+	width : 215px;
+	height: 45px;
+	float: left;
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+	text-align:center;
+	
+}
+
+#left_side_down{
+	background-color: white;
+	width : 210px;
+	height: 505px;
+	float: left;
+	margin:5px;
+	border:1px solid grey;
+	border-radius: 7px;
+}
+
+#right_side{	
+	
+	width : 977px;
+	height: 565px;
+	margin: 69px 280px;
+	position: absolute;
+}
+
+#right_side_upper{
+	background-color: #f1f3f5;
+	width: 837px;
+	height: 45px;
+	float: left;
+	border-top-left-radius: 10px;
+	border-top-right-radius: 10px;
+}
+
+#right_side_down{
+	width: 837px;
+	background-color: #f1f3f5;
+	float:left;
+	height: 520px;
+}
+
+#ntBoardFolderList{
+	float : left;
+    width : 189px; 
+    margin: 20px 8px;
+    margin-right: 25px;
+    background-color: white;
+}
+
+#glBoardFolderList{
+	float : left;
+    width : 189px; 
+    margin: 20px 8px;
+    margin-right: 25px;
+    background-color: white;
+}
+
+#drBoardFolderList{
+    float : left;
+    width : 189px; 
+    margin: 20px 8px;
+    margin-right: 25px;
+    background-color: white;
+}
+
+#MngFolderList{
+	float : left;
+    width : 189px; 
+    margin: 20px 8px;
+    margin-right: 25px;
+    background-color: white;
+}
+
+#minihome_content{
+	width : 825px;
+	height: 505px;
+	float:left;
+	border-radius: 7px;
+	position: relative;
+	background-color: white;
+	margin: 5px;
+	border:1px solid grey;
+}
+
+#btnWrapper{
+	width : 100px;
+	height: 515px;
+	text-align: center;
+	background-color:transparent;
+	float: left;
+}
+
+#btnEdit {
+	border: none;
+	background-color: transparent;
+	font-size: 50%;
+	font-family: Verdana;
+	color : black;
+    margin-left: 20px;
+	margin-top: 5px;
+    float: left;
+}
+
+#btnDone {
+	border: none;
+	background-color: transparent;
+	font-size: 50%;
+	font-family: Verdana;
+	color : black;
+    margin-left: 10px;
+	margin-top: 5px;
+    float: left;
+	display: none;
+}
+
+#btnImg{
+	font-size: 50%;
+    font-family: Verdana;
+    color : black;
+}
+
+#btnTitleUpdate{
+	background: grey;
+	border:none;
+	border-radius:2px;
+	color:white;
+	margin-top: 5px;
+}
+
+#homepageReload{
+	width: 190px;
+	height:30px;
+	font-size: 100%;
+	border : 1px solid grey;
+	background-color: white;
+	border-radius:3px;
+	margin: 0px 20px 0px auto;
+}
+
+#visitWrapper{
+	width: 220px;
+	height: 10px;
+	text-align: center;
+	margin-top: 25px;
+}
+
+#titleWrapper{
+	width: 500px;
+	margin : 15px 25px 10px 10px;
+	float: left;
+}
+
+#profilePhotoWrapper{
+	width :141px;
+	height: 200px;
+	margin:30px auto 5px;
+	border: 0 ;
+	margin-top: 15px;
+}
+
+#todaySelect {
+/* 	border: 1px solid red; */
+	width: 180px;
+	height: 30px;
+	margin: auto;
+	margin-top: 10px;
+}
+
+#today {
+	width : 180px;
+	height: 25px;
+
+}
+
+#profileWrapper{
+	/* border: 1px solid blue; */
+	width : 180px;
+	height: 100px;
+	margin: 5px 20px 10px 14.5px;
+	font-size:120%;
+	float:left;
+	color : grey;
+	position: relative;
+}
+
+#intro {
+    border: none;
+    width: 180px;
+    height: 100px;
+    overflow-y: scroll;
+}
+
+#wavingWrapper{
+	width : 170px;
+	height: 50px;
+	border-top: 1px solid grey;
+	float: left;
+	margin: 0px 20px;
+	margin-top: 15px;
+	padding-top: 10px;
+}
+
+#todayCnt{
+	color :red;
+}
+
+#aTitle{
+	font-size: 115%;
+	font-weight: bold;
+}
+
+#lblHomeName{
+	font-size: 110%;
+	color: #4582b4;
+	font-weight: bold;
+}
+
+#selectFrd{
+	width: 167px;
+	height: 20px;
+	margin-top: 5px;
+}
+
+body{
+	background-repeat: no-repeat;
+	background-size: 1200px 720px;
+    overflow: hidden;
+}
+
+ol {
+    list-style : none;
+    padding-inline-start: 10px;
+}
+
+ol li{
+	background: url("${pageContext.request.contextPath}/resources/images/folder2.png") left center no-repeat;
+	list-style-position : inside;
+	padding-left: 20px;
+}
+
+.btnMngFolder:hover{
+	background-color: #504E48;
+    color: white;
+}
+
+#homepageReload:hover{
+    background-color: #504E48;
+    color: white;
+}
+
+#btnEdit:hover{cursor: pointer;}
+#btnDone:hover{cursor: pointer;}
+#btnImg:hover{cursor: pointer;}
+button:hover{cursor: pointer;}
+a:link {text-decoration: none; color: #333333;}
+a:visited {text-decoration: none; color: #333333;}
+a:active {text-decoration: none; color: #333333;}
+a:hover {text-decoration: underline; color: black;}
+*:focus { outline:none; }
+
+iframe {
+	border:none;
+}
+
+#mainImg {
+    transform: translate(-10.5%);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator, input[type="date"]::-webkit-inner-spin-button
+{
+    display: none;
+    appearance: none;
+}
+
+.i-datepicker-trigger {
+    cursor: pointer;
+}
+
+.ui-datepicker-calendar>tbody td.ui-datepicker-week-end:first-child a {
+    color: red;
+}
+
+.ui-datepicker-calendar>tbody td.ui-datepicker-week-end:last-child a {
+	color: blue;
+}
+
+#minihomeTitleText {
+	width: 400px;
+}
+
+/* 설정탭 왼쪽 메뉴바 추가 css */
+#modify {
+	border-bottom: 1px solid #333;
+	width: 180px;
+	height: 25px;
+	float: left;
+	margin-top: 300px;
+	margin-left: 15px;
+	color: #4582b4;
+	/* color: #50BCDF; */
+	font-size: 14px;
+	font-weight: bold;
+}
+
+#modifyMenu {
+	width: 180px;
+	height: 60px;
+	float: left;
+	margin-left: 15px;
+	font-size: 14px;
+}
+
+#modifyMenu a {
+	color: navy;
+}
+
+#myBgm {
+	border-bottom: 1px solid #333;
+	width: 180px;
+	height: 25px;
+	float: left;
+	margin-left: 15px;
+	margin-top: 20px;
+	color: #4582b4;
+	/* color: #50BCDF; */
+	font-size: 14px;
+	font-weight: bold;
+}
+
+#myBgmMenu {
+	width: 180px;
+	height: 60px;
+	float: left;
+	margin-left: 15px;
+	font-size: 14px;
+}
+
+#myBgmMenu a {
+	color: navy;
+}

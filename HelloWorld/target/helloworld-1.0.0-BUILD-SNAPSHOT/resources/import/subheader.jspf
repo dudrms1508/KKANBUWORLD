@@ -1,0 +1,143 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+
+<style>
+.dropdownMenuWrapper:hover #menuBarWrapper{
+	display: block;
+}
+header{
+  background-color: #ff6f6b;
+  height: 90px;
+  
+}
+.dropdownMenuWrapper{
+	width: 80px;
+	height: 100px;
+	position: absolute;
+}
+#btnOpenMenu{
+	border-style: none;
+	background-color: #ff6f6b;
+	position: absolute;
+	margin : 15px 15px;
+	#menuBarWrapper:hover{
+	display: block;
+}
+}
+
+#menuBarWrapper{
+	width: 200px;
+	height: 360px;
+	margin: 90px 0px;
+	background-color: white;
+	position: absolute;
+	border-radius: 10px;
+	box-shadow: 2px 2px 2px grey;
+	padding: 10px ;
+	text-align: center;
+	display:none;
+	
+}
+
+.btnMenu{
+	width: 160px;
+	height: 60px;
+	margin-top: 10px;
+	border-style: none;
+	background: white;
+	font-size: 140%;
+	
+}
+#headerWrapper{
+	width : 60%;
+	margin: 0px auto;
+}
+#logoInHeader{
+	float: left;
+}
+#pWelecomeMsg{
+	font-size: 150%;
+	color: white;
+	margin-top : 30px;
+	padding: 30px;
+}
+#btnLogout{
+	font-size: 150%;
+	background-color: #ff6f6b;
+	color :white;
+	float : right;
+	margin : 30px;
+	border : 2px solid white;
+	border-radius: 10px;
+}
+</style>
+
+<div class="dropdownMenuWrapper">
+	<button id="btnOpenMenu">
+		<img
+			src="${pageContext.request.contextPath}/resources/images/menuIcon.png">
+	</button>
+	<div id="menuBarWrapper">
+		<button class="btnMenu" id="btnGoHompie">미니홈피</button>
+		<button class="btnMenu" id="btnFriends">일촌</button>
+		<button class="btnMenu" id="btnSearchFrd">사람찾기</button>
+		<button class="btnMenu" id="btnCallCenter">고객센터</button>
+		<button class="btnMenu" id="btnPrivacy">개인정보 관리</button>
+	</div>
+</div>
+<header>
+	<div id="headerWrapper">
+		<img id="logoInHeader"
+			src="${pageContext.request.contextPath}/resources/images/logoIconwhite.png">
+		<a id="pWelecomeMsg">${loginName }님 반갑읍니다</a>
+		<button id="btnLogout">logout</button>
+
+	</div>
+</header>
+
+
+<script type="text/javascript">
+	$(document).ready(
+			function() {
+				
+			 	var userid = '${loginId}';
+				$('#btnGoHompie').click(
+						function() {
+							window.open('/helloworld/world/mini-home-page?homeId=' + userid, 'title',
+									'width=1280, height=720')
+						});
+
+				$('#btnSearchFrd').click(function() {
+					location.href = "/helloworld/main/searchFrd";
+
+				});
+
+				$('#btnRcmFrd').click(function() {
+					location.href = "/helloworld/main/appliedFrd";
+
+				});
+
+				$('#btnFriends').click(function() {
+					location.href = "/helloworld/main/managingFrd";
+
+				});
+				$('#btnLogout').click(function() {// 로그아웃 버튼 클릭 
+
+					location = '/helloworld/user/logout';
+
+				});
+				
+				
+				$('#btnPrivacy').click(function() {// 로그아웃 버튼 클릭 
+
+					location = '/helloworld/user/mypage';
+
+				});
+				$('#logoInHeader').click(function() {// 로그아웃 버튼 클릭 
+
+					location = '/helloworld';
+
+				});
+				btnOpenMenu
+			});
+</script>

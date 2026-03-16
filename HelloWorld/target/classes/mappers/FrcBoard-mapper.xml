@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.helloworld.FrcBoardMapper">
+  <select id="select_all" resultType="FrcBoardVO">
+        select * from ${frc_board} where ${col_home_id} = #{home_id} order by ${col_frc_bno} desc
+        <!-- mybatis-config.xml 에 작성한 name -->
+  </select>
+  
+  <select id = "check_frc_alreadyWritten" resultType="FrcBoardVO">
+  		select * from ${frc_board} where ${col_home_id} = #{home_id} and ${col_userid} = #{userid}
+  </select>
+  <!-- 
+  resultType : select를 했을 때 레코드 하나의 타입
+  - 원래는 패키지 이름을 포함한 전체 경로의 클래스 이름을 사용해야 함
+  - mybatis-config.xml 에서 typeAliases 속성을 package로
+    정의 했기 때문에 클래스 이름만 사용할 수 있음
+   -->
+  
+  <select id="select_by_bno" resultType="FrcBoardVO">
+    select * from ${frc_board}
+    where ${col_frc_bno} = #{frc_bno}
+  </select>
+  
+  <insert id="insert">
+    insert into ${frc_board}(${col_nickname}, ${col_userid}, ${col_user_name}, 
+    ${col_frc_content}, ${col_home_id})
+    values(#{nickname}, #{userid}, #{user_name}, #{frc_content}, #{home_id})
+  </insert>
+   
+  <update id="update">
+    update ${frc_board}
+    set ${col_frc_content} = #{frc_content}
+    where ${col_frc_bno} = #{frc_bno}
+  </update>
+  
+  <delete id="delete">
+    delete from ${frc_board}
+    where ${col_frc_bno} = #{frc_bno}
+  </delete>
+   
+   <select id="total_count" resultType="Integer">
+    select count(*) total_cnt from ${frc_board}
+   </select>
+  
+   <update id="update_replycnt">
+    update ${frc_board}
+    set ${col_replycnt} = ${col_replycnt} + #{replycnt}
+    where ${col_frc_bno} = #{frc_bno}
+   </update>
+ 
+   
+</mapper>

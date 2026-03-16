@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.kh.world.photo.model.mapper.PhotoMapper">
+
+	<sql id="photoSql">
+		SELECT PHOTO_NO,
+				MINIHOME_NO,
+				FOLDER_NO,
+				PHOTO_ONAME,
+				PHOTO_RNAME,
+				PHOTO_URL,
+				PHOTO_TITLE,
+				PHOTO_COMMENT,
+				PHOTO_DATE,
+				PHOTO_M_DATE,
+				PHOTO_VIEW,
+				PHOTO_STATUS,
+				REPORT_CODE,
+				PHOTO_REPORT
+		FROM PHOTO
+		WHERE PHOTO_STATUS = 'Y'
+	</sql>
+	<sql id="replySql">
+		SELECT R_NO,
+				PHOTO_NO,
+				R_WRITERID,
+				R_COMMENT,
+				R_DATE,
+				R_M_DATE,
+				R_STATUS
+		FROM PHOTO_REPLY
+		WHERE R_STATUS = 'Y'
+	</sql>
+	
+	
+	<resultMap id="photoResultMap" type="Photo">
+		
+		<result property="no" column="PHOTO_NO"/>
+		<result property="minihomeNo" column="MINIHOME_NO"/>
+		<result property="folderNo" column="FOLDER_NO"/>
+		<result property="Oname" column="PHOTO_ONAME"/>
+		<result property="Rname" column="PHOTO_RNAME"/>
+		<result property="url" column="PHOTO_URL"/>
+		<result property="title" column="PHOTO_TITLE"/>
+		<result property="comment" column="PHOTO_COMMENT"/>
+		<result property="Cdate" column="PHOTO_DATE"/>
+		<result property="Mdate" column="PHOTO_M_DATE"/>
+		<result property="view" column="PHOTO_VIEW"/>
+		<result property="status" column="PHOTO_STATUS"/>
+		<result property="reportCode" column="REPORT_CODE"/>
+		<result property="report" column="PHOTO_REPORT"/>
+		
+		<collection property="PhotoReply" javaType="PhotoReply" columnPrefix="R_"
+					resultMap="photoReplyResultMap" />
+	</resultMap>
+	
+	<resultMap id="photoReplyResultMap" type="PhotoReply">
+		
+		<result property="no" column="R_NO"/>
+		<result property="photoNo" column="PHOTO_NO"/>
+		<result property="writerId" column="R_WRITERID"/>
+		<result property="comment" column="R_COMMENT"/>
+		<result property="Cdate" column="R_DATE"/>
+		<result property="Mdate" column="R_M_DATE"/>
+		<result property="status" column="R_STATUS"/>
+		
+	</resultMap>
+	
+	
+	<select id="findLastPhoto" parameterType="_int" resultMap="photoResultMap">
+		<include refid="photoSql" />
+		AND MINIHOME_NO = #{minihomeNo}
+		ORDER BY PHOTO_DATE DESC
+		LIMIT 3
+	</select>
+	<select id="findReplyPhoto" parameterType="_int" resultMap="photoResultMap">
+		SELECT P.PHOTO_NO,
+				P.MINIHOME_NO ,
+				P.FOLDER_NO ,
+				P.PHOTO_ONAME ,
+				P.PHOTO_RNAME ,
+				P.PHOTO_URL ,
+				P.PHOTO_TITLE ,
+				P.PHOTO_COMMENT ,
+				P.PHOTO_DATE ,
+				P.PHOTO_M_DATE ,
+				P.PHOTO_VIEW ,
+				P.PHOTO_STATUS ,
+				P.PHOTO_REPORT 
+		FROM PHOTO P
+		JOIN PHOTO_REPLY R ON (P.PHOTO_NO = R.PHOTO_NO)
+		AND MINIHOME_NO = #{minihomeNo}
+		GROUP BY P.PHOTO_NO 
+		ORDER BY COUNT(*) DESC
+		LIMIT 3
+	</select>
+	<select id="findViewPhoto" parameterType="_int" resultMap="photoResultMap">
+		<include refid="photoSql" />
+		AND MINIHOME_NO = #{minihomeNo}
+		ORDER BY PHOTO_VIEW DESC
+		LIMIT 3
+	</select>
+
+
+	<insert id="insertPhoto" parameterType="Photo"
+				useGeneratedKeys="true" keyProperty="no" keyColumn="PHOTO_NO">
+		INSERT INTO PHOTO(
+						PHOTO_NO,
+						MINIHOME_NO,
+						FOLDER_NO,
+						PHOTO_ONAME,
+						PHOTO_RNAME,
+						PHOTO_URL,
+						PHOTO_TITLE,
+						PHOTO_COMMENT,
+						PHOTO_DATE,
+						PHOTO_M_DATE,
+						PHOTO_VIEW,
+						PHOTO_STATUS,
+						REPORT_CODE,
+						PHOTO_REPORT
+				)VALUES(
+						(SELECT NEXTVAL('photo_seq') FROM DUAL),
+						#{minihomeNo},
+						0,
+						#{Oname},
+						#{Rname},
+						#{url},
+						#{title},
+						#{comment},
+						DEFAULT,
+						DEFAULT,
+						DEFAULT,
+						DEFAULT,
+						DEFAULT,
+						DEFAULT
+				)
+	</insert>
+	
+	
+	<select id="findPhotoByNo" parameterType="_int" resultMap="photoResultMap">
+		<include refid="photoSql" />
+		AND PHOTO_NO = #{no}
+	</select>
+	
+	<update id="updatePhoto" parameterType="Photo"
+				useGeneratedKeys="true" keyProperty="no" keyColumn="PHOTO_NO">
+		UPDATE PHOTO
+		SET 
+		 	PHOTO_TITLE= #{title},
+		 	PHOTO_COMMENT=#{comment},
+		 	PHOTO_ONAME= #{Oname},
+		 	PHOTO_RNAME= #{Rname},
+		 	PHOTO_URL =  #{url},
+		 	PHOTO_M_DATE = DEFAULT  
+		 WHERE PHOTO_STATUS = 'Y' AND PHOTO_NO = #{no}
+	</update>
+	
+	
+	<select id="findPhotoByFolderNo" parameterType="_int" resultMap="photoResultMap">
+		<include refid="photoSql" />
+		AND FOLDER_NO = #{folderNo} AND MINIHOME_NO = #{minihomeNo}
+	</select>
+	
+	<select id="getPhotoCountByFolder"  resultType="_int">
+		SELECT COUNT(*)
+		FROM PHOTO 
+		WHERE PHOTO_STATUS = 'Y' AND FOLDER_NO =#{folderNo} AND MINIHOME_NO = #{minihomeNo}
+	</select>
+	
+	
+	<update id="deletePhoto" parameterType="list"
+				useGeneratedKeys="true" keyProperty="no" keyColumn="PHOTO_NO">
+		UPDATE PHOTO 
+		<if test="list.size != 0">
+		SET PHOTO_STATUS = 'N'
+		WHERE PHOTO_NO IN
+		<foreach collection="list" item="no" open="(" separator="," close=")">
+		#{no}
+		</foreach>
+		</if>
+		
+	</update>
+	
+	<insert id="insertReply"  parameterType="PhotoReply"
+				useGeneratedKeys="true" keyProperty="no" keyColumn="PHOTO_NO">
+		INSERT  INTO PHOTO_REPLY(R_NO, PHOTO_NO, R_WRITERID, R_COMMENT, R_DATE, R_M_DATE, R_STATUS)
+				VALUES((SELECT NEXTVAL('photo_reply_seq') FROM DUAL),
+							#{photoNo},
+							#{writerId},
+							#{comment},
+							DEFAULT,
+							DEFAULT,
+							DEFAULT
+							);
+	</insert>
+	
+	
+	
+	<select id="findReplyByNo" parameterType="_int" resultMap="photoReplyResultMap">
+		<include refid="replySql" />
+		AND PHOTO_NO = #{photoNo};
+	</select>
+	
+	<update id="deleteReplyByNo" parameterType="_int"
+				useGeneratedKeys="true" keyProperty="no" keyColumn="PHOTO_NO">
+		UPDATE PHOTO_REPLY 
+		SET R_STATUS = 'N'
+		WHERE R_NO = #{no};
+	</update>
+	
+	<update id="updateReply" parameterType="PhotoReply"
+				useGeneratedKeys="true" keyProperty="no" keyColumn="PHOTO_NO">
+	UPDATE PHOTO_REPLY
+	SET R_COMMENT = #{comment}
+	WHERE R_NO = #{no}
+	</update>
+	
+	
+	
+	
+	
+	
+	<resultMap id="minihomeResultMap" type="Minihome">
+		
+		<result property="minihomeNo" column="MINIHOME_NO"/>
+		<result property="userNo" column="USER_NO"/>
+		<result property="profile" column="PROFILE"/>
+		<result property="intro" column="INTRO"/>
+		<result property="mood" column="MOOD"/>
+		<result property="mbti" column="MBTI"/>
+		<result property="miniroom" column="MINIROOM"/>
+		<result property="mhAccess" column="MH_ACCESS"/>
+		<result property="theme" column="THEME"/>
+		
+	</resultMap>
+	<select id="findMinihomeByNo" parameterType="_int" resultMap="minihomeResultMap">
+		SELECT MINIHOME_NO,
+				 USER_NO,
+				 PROFILE,
+				 INTRO,
+				 MOOD,
+				 MBTI,
+				 MINIROOM,
+				 MH_ACCESS,
+				 THEME
+		FROM MINIHOME 
+		WHERE MINIHOME_NO = #{minihomeNo}
+	</select>
+	
+	
+	
+	
+</mapper>

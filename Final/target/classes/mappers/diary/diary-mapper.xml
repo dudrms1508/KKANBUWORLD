@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.kh.world.diary.model.mapper.DiaryMapper">
+
+	<sql id="selectDiarySql">
+		 SELECT D_NO,
+				MINIHOME_NO,
+				D_CATE,
+				D_WRITER_NO,
+				D_TITLE,
+				D_CONTENT,
+				D_ORIGIN,
+				D_RENAME,
+				D_URL,
+				D_CREATE_DATE,
+				D_MODIFY_DATE,
+				D_STATUS,
+				D_FOLDER
+		FROM DIARY 
+	</sql>
+	
+	<sql id="selectMemberSql">
+		 SELECT USER_NO,
+				USER_ID,
+				USER_PWD,
+				NAME,
+				ROLE,
+				PHONE,
+				EMAIL,
+				BIRTH,
+				ADDRESS,
+				SEARCH_ME,
+				GENDER,
+				MINIMI,
+				CREATE_DATE,
+				ACORN,
+				STATUS
+		FROM MEMBER 
+	</sql>
+	
+	<sql id="selectDiaryReplySql">
+		 SELECT DRE_NO,
+				D_NO,
+				DRE_WRITER_NO,
+				DRE_CONTENT,
+				DRE_CREATE_DATE,
+				DRE_MODIFY_DATE,
+				DRE_SECRET,
+				DRE_STATUS,
+				DRE_GROUP,
+				DRE_DEPTH,
+				DRE_ORDER
+		FROM DIARY_REPLY 
+	</sql>
+	
+	
+	<resultMap id="memberResultMap" type="Member">
+		<id property="no" column="USER_NO"/>
+		<result property="id" column="USER_ID"/>
+		<result property="password" column="USER_PWD"/>
+		<result property="name" column="NAME"/>
+		<result property="role" column="ROLE"/>
+		<result property="phone" column="PHONE"/>
+		<result property="email" column="EMAIL"/>
+		<result property="birth" column="BIRTH"/>
+		<result property="address" column="ADDRESS"/>
+		<result property="searchMe" column="SEARCH_ME"/>
+		<result property="gender" column="GENDER"/>
+		<result property="minimi" column="MINIMI"/>
+		<result property="createDate" column="CREATE_DATE"/>
+		<result property="acorn" column="ACORN"/>
+		<result property="status" column="STATUS"/>
+	</resultMap>
+	
+	<resultMap id="memberMinihomeResultmap" type="com.kh.world.minihome.model.vo.MemberMinihome">
+		<id property="minihomeNo" column="MINIHOME_NO"/>
+		<result property="profile" column="PROFILE"/>
+		<result property="intro" column="INTRO"/>
+		<result property="mood" column="MOOD"/>
+		<result property="mbti" column="MBTI"/>
+		<result property="miniroom" column="MINIROOM"/>
+		<result property="theme" column="THEME"/>
+		<result property="mhAccess" column="MH_ACCESS"/>
+		<association property="DiaryReply" resultMap="DiaryReplyResultMap"/>
+		<association property="member" javaType="Member" columnPrefix="M_"  
+						resultMap="memberResultMap"/>
+	</resultMap>
+	
+	<resultMap id="DiaryResultMap" type="Diary">
+		<id property="dNo" column="D_NO" />
+		<result property="minihomeNo" column="MINIHOME_NO" />
+		<result property="dCate" column="D_CATE" />
+		<result property="title" column="D_TITLE" />
+		<result property="writer" column="D_WRITER_NO" />
+		<result property="content" column="D_CONTENT" />
+		<result property="oFile" column="D_ORIGIN" />
+		<result property="rFile" column="D_RENAME" />
+		<result property="url" column="D_URL" />
+		<result property="createDate" column="D_CREATE_DATE" />
+		<result property="modifyDate" column="D_MODIFY_DATE" />
+		<result property="status" column="D_STATUS" />
+		<result property="folder" column="D_FOLDER" />
+		<association property="member" resultMap="memberResultMap"/>
+	</resultMap>
+	
+	
+	<resultMap id="DiaryReplyResultMap" type="DiaryReply">
+		<id property="dreNo" column="DRE_NO" />
+		<result property="dNo" column="D_NO" />
+		<result property="writer" column="DRE_WRITER_NO" />
+		<result property="content" column="DRE_CONTENT" />
+		<result property="createDate" column="DRE_CREATE_DATE" />
+		<result property="modifyDate" column="DRE_MODIFY_DATE" />
+		<result property="secret" column="DRE_SECRET" />
+		<result property="status" column="DRE_STATUS" />
+		<result property="group" column="DRE_GROUP" />
+		<result property="depth" column="DRE_DEPTH" />
+		<result property="order" column="DRE_ORDER" />
+		<association property="diary" resultMap="DiaryResultMap"/>
+	</resultMap>
+	
+	<!-- 	<select id="findMinihomeByNo" parameterType="_int" resultMap="memberMinihomeResultmap">
+		SELECT MINIHOME_NO,
+			   PROFILE,
+			   INTRO,
+			   MOOD,
+			   MBTI,
+			   MINIROOM,
+			   THEME,
+			   MH_ACCESS,
+			   M.USER_NO AS M_USER_NO,
+			   USER_ID AS M_USER_ID,
+			   USER_PWD AS M_USER_PWD,
+			   NAME AS M_NAME,
+			   ROLE AS M_ROLE,
+			   PHONE AS M_PHONE,
+			   EMAIL AS M_EMAIL,
+			   BIRTH AS M_BIRTH,
+			   ADDRESS AS M_ADDRESS,
+			   SEARCH_ME AS M_SEARCH_ME,
+			   GENDER AS M_GENDER,
+			   MINIMI AS M_MINIMI,
+			   CREATE_DATE AS M_CREATE_DATE,
+			   ACORN AS M_ACORN,
+			   STATUS AS M_STATUS
+		FROM MINIHOME H
+		INNER JOIN MEMBER M ON (H.USER_NO = M.USER_NO)
+		WHERE M.USER_NO = #{userNo}
+	</select> -->
+	
+	
+	
+	<insert id="insertDiary" parameterType="Diary"
+				useGeneratedKeys="false" keyProperty="dNo" keyColumn="D_NO">
+	   INSERT INTO DIARY (
+	        MINIHOME_NO, 
+	        D_CATE, 
+	        D_WRITER_NO, 
+	        D_TITLE, 
+	        D_CONTENT, 
+	        D_ORIGIN, 
+	        D_RENAME, 
+	        D_URL, 
+	        D_CREATE_DATE, 
+	        D_MODIFY_DATE, 
+	        D_STATUS, 
+	        D_FOLDER
+	    ) 
+	    VALUES (
+	        #{minihomeNo}, 
+	        DEFAULT, 
+			#{writer},
+	        #{title}, 
+	        #{content}, 
+	        'test오', 
+	        'test', 
+	        'test',
+	        DEFAULT, 
+	        DEFAULT, 
+	        DEFAULT, 
+	        DEFAULT
+	    )
+	</insert>
+
+	<select id="findAllDiary" resultMap="DiaryResultMap">
+		SELECT D_NO,
+		       MINIHOME_NO,
+		       D_CATE,
+		       D_WRITER_NO,
+		       D_TITLE,
+		       D_CONTENT,
+		       D_ORIGIN,
+		       D_RENAME,
+		       D_URL,
+		       D_CREATE_DATE,
+		       D_MODIFY_DATE,
+		       D_STATUS,
+		       D_FOLDER
+		FROM DIARY
+		WHERE MINIHOME_NO = #{minihomeNo} AND D_STATUS = 'Y' And D_WRITER_NO = #{writer}
+		ORDER BY D_CREATE_DATE DESC
+	</select>
+
+	<!-- 게시글 수정 -->
+	<update id="updateDiary" parameterType="Diary">
+		UPDATE DIARY
+		<trim prefix="SET" suffixOverrides=",">
+			<if test="title != null">
+				D_TITLE = #{title},
+			</if>
+			<if test="content != null">
+				D_CONTENT = #{content},
+			</if>
+			D_MODIFY_DATE = NOW()
+		</trim>
+		WHERE D_NO = #{dNo}
+	</update>
+	
+	
+	<select id="findDiaryByNo" parameterType="_int" resultMap="DiaryResultMap">
+		SELECT D.D_NO,
+			   D.MINIHOME_NO, 
+			   D.D_WRITER_NO, 
+			   D.D_CATE,
+			   D.D_TITLE, 
+			   D.D_CONTENT, 
+			   D.D_ORIGIN, 
+			   D.D_RENAME, 
+			   D.D_URL, 
+			   D.D_CREATE_DATE, 
+			   D.D_MODIFY_DATE, 
+			   D.D_STATUS, 
+			   D.D_FOLDER,
+			   M.USER_ID AS M_USER_ID,
+			   M.NAME AS M_NAME,
+			   M.PHONE AS M_PHONE,
+			   M.EMAIL AS M_EMAIL,
+			   M.BIRTH AS M_BIRTH,
+			   M.ADDRESS AS M_ADDRESS,
+			   M.SEARCH_ME AS M_SEARCH_ME,
+			   M.GENDER AS M_GENDER,
+			   M.MINIMI AS M_MINIMI,
+			   H.PROFILE,
+			   H.INTRO,
+			   H.MOOD,
+			   H.MBTI,
+			   H.MINIROOM,
+			   H.THEME,
+			   H.MH_ACCESS,
+			   H.USER_NO AS H_USER_NO
+		FROM DIARY D
+		INNER JOIN MEMBER M ON D.D_WRITER_NO = M.USER_NO
+		INNER JOIN MINIHOME H ON H.USER_NO = M.USER_NO
+		WHERE D.D_NO = #{dNo} 
+		AND D.D_STATUS = 'Y' 
+		AND M.USER_NO = #{userNo}
+	</select>
+	
+	<update id="deleteDiary">
+		UPDATE DIARY
+		SET
+			D_STATUS = #{status}
+		WHERE D_NO = #{dNo}
+	</update>
+	
+	<insert id="insertDiaryReply" parameterType="DiaryReply"
+				useGeneratedKeys="false" keyProperty="dreNo" keyColumn="DRE_NO">
+		INSERT INTO DIARY_REPLY (
+		    D_NO, 
+		    DRE_WRITER_NO, 
+		    DRE_CONTENT, 
+		    DRE_CREATE_DATE, 
+		    DRE_MODIFY_DATE, 
+		    DRE_SECRET, 
+		    DRE_STATUS, 
+		    DRE_GROUP, 
+		    DRE_DEPTH, 
+		    DRE_ORDER
+		) 
+		VALUES (
+		    #{dNo},
+		    #{writer},
+		    #{content},
+		    DEFAULT, 
+		    DEFAULT, 
+		    DEFAULT, 
+		    DEFAULT,
+		    1, 
+		    0, 
+		    1
+		)
+	</insert>
+	
+	<!-- 	
+	<select id="finallDiaryReply" parameterType="_int" resultMap="DiaryReplyResultMap">
+		SELECT *
+		FROM DIARY_REPLY R
+		INNER JOIN DIARY D
+		ON R.D_NO = D.D_NO
+		WHERE D.MINIHOME_NO = #{minihomeNo}
+	</select>
+	 -->
+	 
+	 <select id="findReplyByNo" parameterType="_int" resultMap="DiaryReplyResultMap">
+		SELECT  DRE_NO,
+			    D_NO, 
+			    DRE_WRITER_NO, 
+			    DRE_CONTENT, 
+			    DRE_CREATE_DATE, 
+			    DRE_MODIFY_DATE, 
+			    DRE_SECRET, 
+			    DRE_STATUS, 
+			    DRE_GROUP, 
+			    DRE_DEPTH, 
+			    DRE_ORDER
+		FROM DIARY_REPLY R
+		JOIN MEMBER M ON(R.DRE_WRITER_NO = M.USER_NO) 
+		WHERE DRE_STATUS = 'Y'
+		AND D_NO = #{dNo}
+		ORDER BY DRE_NO DESC
+		LIMIT 3
+	</select>
+	 
+	
+
+</mapper>
+

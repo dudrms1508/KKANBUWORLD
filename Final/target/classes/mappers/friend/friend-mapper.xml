@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.kh.world.friend.model.mapper.FriendMapper">
+
+	<sql id="selectMemberSql">
+		 SELECT USER_NO,
+				USER_ID,
+				USER_PWD,
+				NAME,
+				ROLE,
+				PHONE,
+				EMAIL,
+				BIRTH,
+				ADDRESS,
+				SEARCH_ME,
+				GENDER,
+				MINIMI,
+				CREATE_DATE,
+				ACORN,
+				STATUS
+		FROM MEMBER 
+	</sql>
+
+	<sql id="selectIlchonSql">
+		 SELECT ILCHON_IDX,
+				USER_NO,
+				ILCHON_NO,
+				ILCHON_NICK,
+				ILCHON_CATE,
+				ILCHON_STATUS
+		FROM ILCHON
+	</sql>
+	
+	<resultMap id="memberResultMap" type="Member">
+		<id property="no" column="USER_NO"/>
+		<result property="id" column="USER_ID"/>
+		<result property="password" column="USER_PWD"/>
+		<result property="name" column="NAME"/>
+		<result property="role" column="ROLE"/>
+		<result property="phone" column="PHONE"/>
+		<result property="email" column="EMAIL"/>
+		<result property="birth" column="BIRTH"/>
+		<result property="address" column="ADDRESS"/>
+		<result property="searchMe" column="SEARCH_ME"/>
+		<result property="gender" column="GENDER"/>
+		<result property="minimi" column="MINIMI"/>
+		<result property="createDate" column="CREATE_DATE"/>
+		<result property="acorn" column="ACORN"/>
+		<result property="status" column="STATUS"/>
+	</resultMap>
+	
+	<resultMap id="IlchonResultMap" type="Ilchon">
+		<id property="indexNo" column="ILCHON_IDX"/>
+		<result property="userNo" column="USER_NO"/>
+		<result property="ilchonNo" column="ILCHON_NO"/>
+		<result property="ilchonNick" column="ILCHON_NICK"/>
+		<result property="ilchonCate" column="ILCHON_CATE"/>
+		<result property="ilchonStatus" column="ILCHON_STATUS"/>
+		<association property="member" javaType="Member" columnPrefix="M_"  
+					 resultMap="memberResultMap"/>
+	</resultMap>
+	
+	<resultMap id="minihomeAddResultMap" type="MinihomeAdd">
+		<id property="minihomeNo"  column="MINIHOME_NO"/>
+		<result property="userNo"  column="USER_NO"/>
+		<result property="profile"  column="PROFILE"/>
+		<result property="intro"  column="INTRO"/>
+		<result property="title"  column="TITLE"/>
+		<result property="mood"  column="MOOD"/>
+		<result property="mbti"  column="MBTI"/>
+		<result property="miniroom"  column="MINIROOM"/>
+		<result property="mhAccess"  column="MH_ACCESS"/>
+		<result property="theme"  column="THEME"/>
+	</resultMap>
+	
+	<resultMap id="ilchoneAddResultMap" type="IlchonAddMinihome">
+		<id property="indexNo" column="ILCHON_IDX"/>
+		<result property="userNo" column="USER_NO"/>
+		<result property="ilchonNo" column="ILCHON_NO"/>
+		<result property="ilchonNick" column="ILCHON_NICK"/>
+		<result property="ilchonCate" column="ILCHON_CATE"/>
+		<result property="ilchonStatus" column="ILCHON_STATUS"/>
+		<association property="member" javaType="Member" columnPrefix="M_"  
+					 resultMap="memberResultMap"/>
+		<association property="minihomeAdd" javaType="MinihomeAdd" columnPrefix="H_"  
+					 resultMap="minihomeAddResultMap"/>	 
+	</resultMap>
+	
+	<select id="friendListAll" resultMap="ilchoneAddResultMap">
+		SELECT M.NAME AS M_NAME,
+			   I.ILCHON_NICK,
+			   I.ILCHON_IDX,
+			   I.USER_NO,
+			   ILCHON_NO,
+			   I.ILCHON_CATE,
+			   I.ILCHON_STATUS,
+			   M.USER_ID AS M_USER_ID,
+			   M.PHONE AS M_PHONE,
+			   M.EMAIL AS M_EMAIL,
+			   M.SEARCH_ME AS M_SEARCH_ME,
+			   M.GENDER AS M_GENDER,
+			   M.MINIMI AS M_MINIMI,
+			   H.MINIHOME_NO AS H_MINIHOME_NO,
+			   H.USER_NO AS H_USER_NO,
+			   H.PROFILE AS H_PROFILE,
+			   H.INTRO AS H_INTRO,
+			   H.TITLE AS H_TITLE,
+			   H.MOOD AS H_MOOD,
+			   H.MBTI AS H_MBTI,
+			   H.MH_ACCESS AS H_MH_ACCESS
+		FROM MEMBER M
+		INNER JOIN ILCHON I ON (M.USER_NO = I.ILCHON_NO)
+		INNER JOIN MINIHOME H ON (H.USER_NO = M.USER_NO)
+		WHERE I.ILCHON_STATUS = 'Y' AND I.USER_NO = #{no}
+	</select>
+
+
+</mapper>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<!-- persistence - daoImple과 동일 해야함 -->
+<mapper namespace="com.spring.helloworld.GalleryReplyMapper">
+	
+  <!--  Reply  -->
+
+  <insert id="insert_reply" >
+    insert into ${col_gallery_reply}(${col_gl_bno}, ${col_userid}, ${col_user_name}, ${col_gl_reply_content})
+    values(#{gl_bno}, #{userid}, #{user_name}, #{gl_reply_content})
+  </insert>
+  
+  <select id = "select_reply_by_gl_bno" resultType = "GalleryReplyVO">
+  	select * from ${col_gallery_reply} where ${col_gl_bno} = #{gl_bno} order by ${col_gl_rno} desc
+  </select>
+  
+  <update id="update_reply">
+  	update ${col_gallery_reply}
+  	set ${col_gl_reply_content} = #{gl_reply_content}
+  	where ${col_gl_rno} = #{gl_rno}
+  </update>
+
+  <delete id = "delete_reply">
+   delete from ${col_gallery_reply}
+   where ${col_gl_rno} = #{gl_rno}
+  </delete>
+
+</mapper>

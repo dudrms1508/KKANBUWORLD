@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.helloworld.noticeBoardMapper">
+ 
+  <select id = "select_byBno" resultType = "noticeBoardVO">
+  	select * from ${notice_board} where ${col_nt_bno} = #{nt_bno}
+  </select>
+  
+  <select id = "find_cnt" resultType = "Integer">
+  	select nt_cnt from ${notice_board} where ${col_nt_bno} = #{nt_bno}
+  </select>
+  
+  <select id = "paging_folder" resultType = "noticeBoardVO">
+  	select 
+  	 b.nt_bno, b.nt_folder, b.userid, b.user_name, b.nt_title, b.nt_content, b.nt_date, b.nt_cnt
+  	 from(
+  	 	select rownum rn, a.*
+  	 	from(
+  	 		select * from ${notice_board} where ${col_userid} = #{userid} and
+  	 	 	${col_nt_folder} = #{nt_folder} order by ${col_nt_bno} desc
+  	 	)a
+  	 ) b
+		where rn between #{start} and #{end}  	 
+  </select>  
+  
+  <select id = "paging_all" resultType = "noticeBoardVO">
+  	select 
+  	 b.nt_bno, b.nt_folder, b.userid, b.user_name, b.nt_title, b.nt_content, b.nt_date, b.nt_cnt
+  	 from(
+  	 	select rownum rn, a.*
+  	 	from(
+  	 		select * from ${notice_board} where ${col_userid} = #{userid} order by ${col_nt_bno} desc
+  	 	)a
+  	 ) b
+		where rn between #{start} and #{end}  	 
+  </select>
+  
+  <select id = "total_count" resultType = "Integer">
+  	select count(*) total_cnt from ${notice_board} where ${col_userid} = #{userid}
+  </select>
+  
+  <select id = "total_count_byFolder" resultType = "Integer">
+  	select count(*) total_cnt from ${notice_board} where ${col_userid} = #{userid} and ${col_nt_folder} = #{nt_folder}
+  </select>
+  
+  <select id="get_folderList" resultType = "String">
+  	select folder_name from folders where ${col_userid} = #{userid} and board_name = 'notice_board'
+  </select>
+  
+  <select id = "get_file_date" resultType="Date">
+  	select nt_date from ${notice_board} where ${col_nt_bno} = #{nt_bno}
+  </select>
+  
+  <insert id="insert">
+  	insert into ${notice_board}(${col_nt_folder}, ${col_nt_userid}, ${col_nt_username}, ${col_nt_title}, ${col_nt_content}, ${col_nt_file})
+  	values(#{nt_folder}, #{userid}, #{user_name}, #{nt_title}, #{nt_content}, #{nt_file})
+  </insert>
+  
+  <update id="update">
+  	update ${notice_board}
+  	 set ${col_nt_folder} = #{nt_folder}, ${col_nt_title} = #{nt_title}, ${col_nt_content} = #{nt_content}, ${col_nt_date} = sysdate
+  	 where ${col_nt_bno} = #{nt_bno} 
+  </update>
+  
+  <update id="update_folder">
+  	update ${notice_board}
+  	 set ${col_nt_folder} = #{nt_folder}
+  	 where ${col_nt_bno} = #{nt_bno} 
+  </update>
+  
+  <update id="update_fName">
+  	update ${notice_board}
+  	 set ${col_nt_folder} = #{new_folder}
+  	 where ${col_nt_folder} = #{old_folder} 
+  </update>
+  
+  <update id="update_fList">
+  	update folders
+  	 set folder_name = #{folder_List}
+  	 where ${col_nt_userid} = #{userid} and board_name = 'notice_board'
+  </update>
+  
+  
+  <update id = "plus_cnt">
+  	update ${notice_board}
+  	 set ${col_nt_cnt} = #{nt_cnt}
+  	 where ${col_nt_bno} = #{nt_bno} 
+  </update>
+  
+  <delete id="delete">
+  	delete from ${notice_board}
+  	where ${col_nt_bno} = #{nt_bno}
+  </delete>
+  
+  <delete id = "delete_f">
+  	delete from ${notice_board}
+  	where ${col_nt_folder} = #{nt_folder} and ${col_nt_userid} = #{userid}
+  </delete>
+  
+  
+  
+ 
+</mapper>

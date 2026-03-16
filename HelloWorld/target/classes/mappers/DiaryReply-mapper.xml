@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.helloworld.ReplyMapper">
+
+	
+	 <select id="select_all_by_bno" resultType="DiaryReplyVO">
+    select * from ${diary_reply}
+     where ${col_d_bno} = #{d_bno} order by ${col_d_bno}
+    </select>
+     
+     
+     <insert id="insert">
+      insert into ${diary_reply}(${col_d_bno}, ${col_userid}, ${col_d_reply_content}, ${col_d_user_name})
+      values(#{d_bno}, #{userid}, #{d_reply_content}, #{user_name})
+     </insert>
+  
+  
+   <update id="update">
+      update ${diary_reply} 
+      set ${col_d_reply_content} = #{d_reply_content}
+      where ${col_d_rno} = #{d_rno}
+     </update>
+
+
+     <delete id="delete">
+      delete from ${diary_reply}
+      where ${col_d_rno} = #{d_rno}
+     </delete>   
+   
+   
+	 
+</mapper>
+	

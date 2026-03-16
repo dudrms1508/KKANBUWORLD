@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.helloworld.MemberMapper">
+
+	<select id="login" resultType="MemberVO">
+		select * from ${member}
+		where
+		${col_userid} = #{userid} and
+		${password} = #{password}
+	</select>
+	<update id="photoupdate">
+		update ${member}
+		set ${col_user_photo} = #{user_photo}
+		where ${col_userid} = #{userid}
+	</update>
+
+	<select id="user_select_All" resultType="MemberVO">
+		select * from ${member}
+		= #{member}
+	</select>
+
+	<insert id="insert">
+		insert into ${member}(
+		${col_userid}, ${password},
+		${col_user_name}, ${col_user_gender}, ${col_user_email},
+		${col_user_birth}, ${col_user_phone}, ${col_user_state})
+		values(
+		#{userid}, #{password}, #{user_name}, #{user_gender}, #{user_email},
+		#{user_birth}, #{user_phone}, #{user_state })
+	</insert>
+
+	<insert id="make_default">
+		insert all
+		into ${col_folders}(${col_userid},
+		${col_board_name}, ${col_folder_name})
+		values( #{userid},
+		'diary_board', '기본폴더')
+		into ${col_folders}(${col_userid},
+		${col_board_name}, ${col_folder_name})
+		values( #{userid},
+		'notice_board', '기본폴더')
+		into ${col_folders}(${col_userid},
+		${col_board_name}, ${col_folder_name})
+		values( #{userid},
+		'gallery_board', '기본폴더')
+		into ${main_form}(${col_userid},
+		${col_main_title})
+		values ( #{userid}, #{user_name})
+		select * from dual
+	</insert>
+
+	<delete id="delete">
+		delete from ${member}
+		where ${col_userid} = #{userid}
+	</delete>
+
+	<select id="select_userid_list" resultType="int">
+		SELECT count(*) from
+		${member} where #{userid} = ${col_userid}
+	</select>
+	<!--SELECT count(*) from member where userid = 'do0610' -->
+
+	<select id="select_by_userid" resultType="MemberVO">
+		select * from ${member}
+		where ${col_userid} = #{userid}
+	</select>
+
+	<update id="user_phoen_update">
+		update ${member}
+		set ${col_user_phone} = #{user_phone}
+		where ${col_userid} = #{userid}
+	</update>
+	<update id="user_pw_update">
+		update ${member}
+		set ${password} = #{password}
+		where
+		${col_userid} = #{userid}
+	</update>
+	<update id="user_email_update">
+		update ${member}
+		set ${col_user_email} = #{user_email}
+		where ${col_userid} = #{userid}
+	</update>
+
+	<select id="member_count_user" resultType="Integer">
+		select count(*) as cnt
+		from ${member}
+	</select>
+
+	<!-- 사람찾기 쿼리 -->
+	<select id="select_searchName" resultType="MemberVO">
+		select * from
+		${member}
+		where ${col_user_name} like '%'|| #{user_name} ||'%' and not
+		${col_userid}
+		in #{userid}
+	</select>
+	<select id="select_searchPhone" resultType="MemberVO">
+		select * from
+		${member}
+		where ${col_user_phone} like '%'|| #{user_phone} ||'%' and
+		not
+		${col_userid} in #{userid}
+	</select>
+
+	<select id="findId_by_phone" resultType="String">
+		select ${col_userid}
+		from ${member}
+		where ${col_user_name} = #{user_name} and
+		${col_user_phone} = #{user_phone}
+	</select>
+
+	<select id="findId_by_email" resultType="String">
+		select ${col_userid}
+		from ${member}
+		where ${col_user_name} = #{user_name} and
+		${col_user_email} = #{user_email}
+	</select>
+
+	<select id="checkId_exist" resultType="String">
+		select ${col_userid} from
+		${member}
+		where ${col_userid} = #{userid}
+	</select>
+
+	<select id="findPw_by_phone" resultType="String">
+		select ${password} from
+		${member}
+		where ${col_user_name} = #{user_name} and ${col_user_phone} =
+		#{user_phone} and ${col_userid} = #{userid}
+	</select>
+
+
+	<select id="findPw_by_email" resultType="String">
+		select ${password} from
+		${member}
+		where ${col_user_name} = #{user_name} and ${col_user_email} =
+		#{user_email} and ${col_userid} = #{userid}
+	</select>
+
+
+
+	<select id="select_page" resultType="MemberVO">
+		select
+		b.userid, b.password,
+		b.user_name ,b.user_gender, b.user_email ,b.user_birth,
+		b.user_phone,
+		b.user_state, b.user_photo
+
+		from (
+		select rownum rn, a.*
+		from (
+		select *
+		from
+		${member}
+		) a
+		) b
+		where rn between #{start} and #{end}
+	</select>
+
+</mapper>

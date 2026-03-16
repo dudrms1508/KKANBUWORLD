@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.kh.world.total.model.mapper.PhotoTotalMapper">
+
+	<resultMap id="memberResultMap" type="Member">
+		<id property="no" column="USER_NO"/>
+		<result property="id" column="USER_ID"/>
+		<result property="password" column="USER_PWD"/>
+		<result property="name" column="NAME"/>
+		<result property="role" column="ROLE"/>
+		<result property="phone" column="PHONE"/>
+		<result property="email" column="EMAIL"/>
+		<result property="birth" column="BIRTH"/>
+		<result property="address" column="ADDRESS"/>
+		<result property="searchMe" column="SEARCH_ME"/>
+		<result property="gender" column="GENDER"/>
+		<result property="minimi" column="MINIMI"/>
+		<result property="createDate" column="CREATE_DATE"/>
+		<result property="acorn" column="ACORN"/>
+		<result property="status" column="STATUS"/>
+	</resultMap>
+	
+	<resultMap id="minihomeResultMap" type="Minihome">
+		<id property="minihomeNo" column="MINIHOME_NO"/>
+		<result property="userNo" column="USER_NO"/>
+		<result property="profile" column="PROFILE"/>
+		<result property="intro" column="INTRO"/>
+		<result property="mood" column="MOOD"/>
+		<result property="mbti" column="MBTI"/>
+		<result property="miniroom" column="MINIROOM"/>
+		<result property="mhAccess" column="MH_ACCESS"/>
+		<result property="theme" column="THEME"/>
+	</resultMap>
+	
+	<resultMap id="photoTotalResultMap" type="PhotoTotal">
+		<id property="photoNo" column="P_PHOTO_NO"/>
+		<result property="minihomeNo" column="P_MINIHOME_NO"/>
+		<result property="floderNo" column="P_FOLDER_NO"/>
+		<result property="Oname" column="P_PHOTO_ONAME"/>
+		<result property="Rname" column="P_PHOTO_RNAME"/>
+		<result property="url" column="P_PHOTO_URL"/>
+		<result property="title" column="P_PHOTO_TITLE"/>
+		<result property="comment" column="P_PHOTO_COMMENT"/>
+		<result property="photoDate" column="P_PHOTO_DATE"/>
+		<result property="photoMoDate" column="P_PHOTO_M_DATE"/>
+		<result property="photoView" column="P_PHOTO_VIEW"/>
+		<result property="status" column="P_PHOTO_STATUS"/>
+		<result property="rank" column="P_RANK"/>
+		<association property="member" javaType="Member" columnPrefix="M_"  
+                	 resultMap="memberResultMap"/>
+		<association property="minihome" javaType="Minihome" columnPrefix="H_"  
+                	 resultMap="minihomeResultMap"/>
+	</resultMap>
+	
+	<!-- 사진첩 조회수 1 -->
+	<select id="findPhotoTotalNo1" resultMap="photoTotalResultMap">
+		SELECT *
+		FROM (
+		SELECT M.USER_NO AS M_USER_NO,
+			   M.USER_ID AS M_USER_ID,
+			   M.NAME AS M_NAME,
+			   M.STATUS AS M_STATUS,
+			   H.MH_ACCESS AS H_MH_ACCESS,
+			   H.MINIHOME_NO AS H_MINIHOME_NO,
+			   P.PHOTO_NO AS P_PHOTO_NO,
+			   P.FOLDER_NO AS P_FOLDER_NO,
+			   P.PHOTO_ONAME AS P_PHOTO_ONAME,
+			   P.PHOTO_RNAME AS P_PHOTO_RNAME,
+			   P.PHOTO_URL AS P_PHOTO_URL,
+			   P.PHOTO_TITLE AS P_PHOTO_TITLE,
+			   P.PHOTO_COMMENT AS P_PHOTO_COMMENT,
+			   P.PHOTO_DATE AS P_PHOTO_DATE,
+			   P.PHOTO_M_DATE AS P_PHOTO_M_DATE,
+			   P.PHOTO_VIEW AS P_PHOTO_VIEW,
+			   P.PHOTO_STATUS AS P_PHOTO_STATUS,
+			   P.REPORT_CODE AS P_REPORT_CODE,
+			   P.PHOTO_REPORT AS P_PHOTO_REPORT,
+		ROW_NUMBER() over (ORDER BY P.PHOTO_VIEW DESC) AS P_RANK
+		FROM MINIHOME H
+		INNER JOIN MEMBER M ON (M.USER_NO = H.USER_NO)
+		INNER JOIN PHOTO P ON (P.MINIHOME_NO = H.MINIHOME_NO)
+		) PHOTORANK
+		WHERE PHOTORANK.P_RANK = 1 AND PHOTORANK.M_STATUS = 'Y'
+	</select>
+	
+	<!-- 사진첩 조회수 2 -->
+	<select id="findPhotoTotalNo2" resultMap="photoTotalResultMap">
+		SELECT *
+		FROM (
+		SELECT M.USER_NO AS M_USER_NO,
+			   M.USER_ID AS M_USER_ID,
+			   M.NAME AS M_NAME,
+			   M.STATUS AS M_STATUS,
+			   H.MH_ACCESS AS H_MH_ACCESS,
+			   H.MINIHOME_NO AS H_MINIHOME_NO,
+			   P.PHOTO_NO AS P_PHOTO_NO,
+			   P.FOLDER_NO AS P_FOLDER_NO,
+			   P.PHOTO_ONAME AS P_PHOTO_ONAME,
+			   P.PHOTO_RNAME AS P_PHOTO_RNAME,
+			   P.PHOTO_URL AS P_PHOTO_URL,
+			   P.PHOTO_TITLE AS P_PHOTO_TITLE,
+			   P.PHOTO_COMMENT AS P_PHOTO_COMMENT,
+			   P.PHOTO_DATE AS P_PHOTO_DATE,
+			   P.PHOTO_M_DATE AS P_PHOTO_M_DATE,
+			   P.PHOTO_VIEW AS P_PHOTO_VIEW,
+			   P.PHOTO_STATUS AS P_PHOTO_STATUS,
+			   P.REPORT_CODE AS P_REPORT_CODE,
+			   P.PHOTO_REPORT AS P_PHOTO_REPORT,
+		ROW_NUMBER() over (ORDER BY P.PHOTO_VIEW DESC) AS P_RANK
+		FROM MINIHOME H
+		INNER JOIN MEMBER M ON (M.USER_NO = H.USER_NO)
+		INNER JOIN PHOTO P ON (P.MINIHOME_NO = H.MINIHOME_NO)
+		) PHOTORANK
+		WHERE PHOTORANK.P_RANK = 2 AND PHOTORANK.M_STATUS = 'Y'
+	</select>
+	
+	<!-- 사진첩 조회수 3 -->
+	<select id="findPhotoTotalNo3" resultMap="photoTotalResultMap">
+		SELECT *
+		FROM (
+		SELECT M.USER_NO AS M_USER_NO,
+			   M.USER_ID AS M_USER_ID,
+			   M.NAME AS M_NAME,
+			   M.STATUS AS M_STATUS,
+			   H.MH_ACCESS AS H_MH_ACCESS,
+			   H.MINIHOME_NO AS H_MINIHOME_NO,
+			   P.PHOTO_NO AS P_PHOTO_NO,
+			   P.FOLDER_NO AS P_FOLDER_NO,
+			   P.PHOTO_ONAME AS P_PHOTO_ONAME,
+			   P.PHOTO_RNAME AS P_PHOTO_RNAME,
+			   P.PHOTO_URL AS P_PHOTO_URL,
+			   P.PHOTO_TITLE AS P_PHOTO_TITLE,
+			   P.PHOTO_COMMENT AS P_PHOTO_COMMENT,
+			   P.PHOTO_DATE AS P_PHOTO_DATE,
+			   P.PHOTO_M_DATE AS P_PHOTO_M_DATE,
+			   P.PHOTO_VIEW AS P_PHOTO_VIEW,
+			   P.PHOTO_STATUS AS P_PHOTO_STATUS,
+			   P.REPORT_CODE AS P_REPORT_CODE,
+			   P.PHOTO_REPORT AS P_PHOTO_REPORT,
+		ROW_NUMBER() over (ORDER BY P.PHOTO_VIEW DESC) AS P_RANK
+		FROM MINIHOME H
+		INNER JOIN MEMBER M ON (M.USER_NO = H.USER_NO)
+		INNER JOIN PHOTO P ON (P.MINIHOME_NO = H.MINIHOME_NO)
+		) PHOTORANK
+		WHERE PHOTORANK.P_RANK = 3 AND PHOTORANK.M_STATUS = 'Y'
+	</select>
+
+</mapper>

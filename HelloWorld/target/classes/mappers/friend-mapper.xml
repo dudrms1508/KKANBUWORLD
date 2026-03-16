@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.helloworld.FriendMapper">
+   <insert id = "insert_frRequest">
+      insert into ${friends_request}(
+      ${col_send_userid}, ${col_send_user_name}, ${col_send_user_nickname}, ${col_get_userid}, ${col_get_user_name}, ${col_get_user_nickname},
+       ${col_message}, ${col_request_status})
+      values( #{send_userid}, #{send_user_name}, #{send_user_nickname}, #{get_userid}, #{get_user_name}, #{get_user_nickname},
+      #{message}, #{request_status})
+   </insert>
+   
+   <insert id="add_fr">
+      insert all
+      into ${friends}(${col_userid}, ${col_fr_id}, ${col_fr_user_name}, ${col_nickName})
+      values( #{send_userid}, #{get_userid}, #{get_user_name}, #{get_user_nickname})
+      into ${friends}(${col_userid}, ${col_fr_id}, ${col_fr_user_name}, ${col_nickName})
+      values( #{get_userid}, #{send_userid}, #{send_user_name}, #{send_user_nickname}) 
+      select * from dual
+   </insert>
+   
+   
+   <select id = "checking_already_applied1" resultType = "String">
+      select ${col_request_status} from ${friends_request}
+      where ${col_send_userid} = #{send_userid} and ${col_get_userid} = #{get_userid}
+   </select>
+   <select id = "checking_already_applied2" resultType = "String">
+      select ${col_request_status} from ${friends_request}
+      where ${col_send_userid} = #{get_userid} and ${col_get_userid} = #{send_userid}
+   </select>
+   <select id = "select_send_frApply" resultType="FriendsRequestVO">
+       select * from ${friends_request}
+       where ${col_send_userid} = #{send_userid}
+    </select>
+    
+    <select id = "select_get_frApply" resultType="FriendsRequestVO">
+       select * from ${friends_request}
+       where ${col_get_userid} = #{send_get_userid}
+    </select>
+    <select id = "select_request_accepted" resultType = "FriendsRequestVO">
+       select * from ${friends_request}
+       where ${col_send_userid} = #{send_userid} and ${col_get_userid} = #{get_userid} and ${col_request_status} = 'accepted'
+    </select>
+    <select id = "select_fr_Id_list" resultType="String">
+       select ${col_fr_id} from ${friends}
+       where ${col_userid} = #{userid}
+    </select>
+    <select id = "select_fr_list" resultType="FriendsVO">
+       select * from ${friends}
+       where ${col_userid} = #{userid}
+    </select>
+  
+    <select id="select_friends_nickname" resultType="FriendsVO">
+      select * from ${friends}
+      where ${col_fr_id} = #{fr_id}  and ${col_userid} = #{userid } 
+     
+    </select>
+    
+    <update id = "update_request">
+       update ${friends_request}
+       set ${col_request_status} = #{request_status}
+       where ${col_send_userid} = #{send_userid} and ${col_get_userid} = #{get_userid} and ${col_request_status} = 'waiting'
+       or ${col_request_status} = 'Cwaiting'
+    </update>
+    
+    <update id = "update_friend1">
+       update ${friends}
+       set ${col_fr_user_name} = #{send_user_name}, ${col_nickName} = #{send_user_nickname}
+       where ${col_userid} = #{get_userid} and ${col_fr_id} = #{send_userid}
+    </update>
+    
+    <update id = "update_friend2">
+       update ${friends}
+       set ${col_fr_user_name} = #{get_user_name}, ${col_nickName} = #{get_user_nickname}
+       where ${col_userid} = #{send_userid} and ${col_fr_id} = #{get_userid}
+    </update>
+ 
+ 
+    <delete id = "delete_request">
+       delete from ${friends_request}
+       where ${col_send_userid} = #{send_userid} and ${col_get_userid} = #{get_userid} and ${col_request_status} = #{request_status}
+    </delete>
+    
+    
+    <delete id = "delete_friend">
+       delete from ${friends}
+       where (${col_userid}, ${col_fr_id}) in ((#{userid}, #{fr_id}), (#{fr_id}, #{userid}))
+    </delete>
+ 
+   
+   
+   
+</mapper>

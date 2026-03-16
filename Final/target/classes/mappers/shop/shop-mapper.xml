@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.kh.world.shop.model.mapper.ProductMapper">
+<resultMap id="productResultMap" type="ProductVo">
+	<id property="product_code" column="PRODUCT_CODE" />
+	<result property="category_code" column="CATEGORY_CODE"/>
+	<result property="product_name" column="PRODUCT_NAME"/>
+	<result property="product_money" column="PRODUCT_PRICE"/>
+	<result property="product_date" column="PRODUCT_DATE"/>
+	<result property="status" column="STATUS"/>
+	<result property="product_file" column="PRODUCT_FILE"/>
+	<result property="product_url" column="PRODUCT_URL"/>
+</resultMap>
+<resultMap id="buyResultMap" type="BuyVo">
+	<id property="buy_idx" column="BUY_IDX"/>
+	<result property="product_code" column="PRODUCT_CODE"/>
+	<result property="user_no" column="USER_NO"/>
+	<result property="pay_date" column="PAY_DATE"/>
+</resultMap>
+
+<resultMap id="memberResultMap" type="Member">
+		<id property="no" column="USER_NO"/>		
+		<result property="id" column="USER_ID"/>
+		<result property="password" column="USER_PWD"/>
+		<result property="name" column="NAME"/>
+		<result property="role" column="ROLE"/>
+		<result property="phone" column="PHONE"/>
+		<result property="email" column="EMAIL"/>
+		<result property="birth" column="BIRTH"/>
+		<result property="address" column="ADDRESS"/>
+		<result property="searchMe" column="SEARCH_ME"/>
+		<result property="gender" column="GENDER"/>
+		<result property="minimi" column="MINIMI"/>
+		<result property="createDate" column="CREATE_DATE"/>
+		<result property="acorn" column="ACORN"/>
+		<result property="status" column="STATUS"/>
+</resultMap>
+
+<resultMap  id="musicResultMap" type="musicVo">
+	<result property="num" column="num"/>
+	<result property="name" column="name"/>
+	<result property="song_name" column="song_name"/>
+</resultMap>
+
+<resultMap type="MyItem" id="myItemResultMap">
+	<result property="user_no" column="USER_NO"/>
+	<result property="product_code" column="PRODCUT_CODE"/>
+</resultMap>
+
+<select id="selectProduct" parameterType="string" resultMap="productResultMap">
+	SELECT PRODUCT_CODE,
+			CATEGORY_CODE,
+			PRODUCT_NAME,
+			PRODUCT_PRICE,
+			PRODUCT_DATE,
+			STATUS,
+			PRODUCT_FILE,
+			PRODUCT_URL
+	FROM PRODUCT 			
+</select>
+
+<select id="selectBuyProduct" parameterType="string" resultMap="productResultMap">
+		SELECT PRODUCT_CODE,
+			CATEGORY_CODE,
+			PRODUCT_NAME,
+			PRODUCT_PRICE,
+			PRODUCT_DATE,
+			STATUS,
+			PRODUCT_FILE,
+			PRODUCT_URL
+	FROM PRODUCT
+	WHERE PRODUCT_CODE = ${product_code}
+</select>
+
+<insert id="insertBuyProduct">
+	INSERT INTO BUY(BUY_IDX, PRODUCT_CODE, USER_NO, PAY_DATE)
+	VALUES
+	(
+		(select nextval('buy_seq') from dual),
+		${product_code},
+		${user_no},
+		DEFAULT
+		)	
+</insert>
+<!-- <insert id="insertBuyProduct">
+	INSERT INTO BUY(BUY_IDX, PRODUCT_CODE, USER_NO, PAY_DATE)
+	VALUES
+	(
+		(select nextval('buy_seq') from dual),
+		${product_code},
+		${user_no},
+		DEFAULT
+		)	
+</insert> -->
+<update id="updateAcorn">
+	UPDATE MEMBER SET ACORN = MEMBER.ACORN - ${product_money} WHERE USER_NO = ${user_no} 
+</update>
+
+<insert id="updateMyItem">
+	INSERT INTO MyItem(USER_NO, PRODCUT_CODE)
+	VALUES(
+		${user_no},
+		${product_code}
+	)
+</insert>
+
+<select id="selectProductBgm" parameterType="string" resultMap="musicResultMap" >
+	SELECT @rownum := @rownum + 1 as 'num' , (SUBSTRING_INDEX(PRODUCT_NAME, "-",1)) as 'name', (SUBSTRING_INDEX(PRODUCT_NAME,"-",-1)) as 'song_name', product_code 
+	FROM PRODUCT
+	WHERE CATEGORY_CODE  = 'BGM' AND (@rownum:=0) = 0	
+</select>
+
+<select id="selectAcorn" resultType="_int">
+	SELECT ACORN
+	FROM MEMBER
+	WHERE USER_NO = ${user_no}
+</select>
+
+<select id="selectProductCount" resultType="_int">
+	SELECT COUNT(*) FROM MyItem
+	WHERE USER_NO = ${user_no} AND PRODCUT_CODE = ${product_code};
+</select>
+
+<select id="musicdetail" resultMap="productResultMap">
+SELECT PRODUCT_CODE,
+			CATEGORY_CODE,
+			PRODUCT_NAME,
+			PRODUCT_PRICE,
+			PRODUCT_DATE,
+			STATUS,
+			PRODUCT_FILE,
+			PRODUCT_URL
+	FROM PRODUCT
+	WHERE PRODUCT_CODE = ${product_code} 
+
+</select>
+ 
+</mapper>

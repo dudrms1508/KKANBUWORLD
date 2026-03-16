@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kh.world.minihome.model.mapper.MinihomeMapper">
+
+
+	<resultMap type="Minihome" id="minihomeResultMap">
+		<id property="minihomeNo"  column="MINIHOME_NO"/>
+		<result property="userNo"  column="USER_NO"/>
+		<result property="profile"  column="PROFILE"/>
+		<result property="intro"  column="INTRO"/>
+		<result property="mood"  column="MOOD"/>
+		<result property="mbti"  column="MBTI"/>
+		<result property="miniroom"  column="MINIROOM"/>
+		<result property="mhAccess"  column="MH_ACCESS"/>
+		<result property="theme"  column="THEME"/>
+	</resultMap>
+
+	<resultMap type="COMENT" id="comentResultMap">
+		<id property="c_no" column="C_NO"/>
+		<result property="minihome_no" column="MINIHOME_NO"/>
+		<result property="coment" column="C_COMENT"/>
+		<result property="create_date" column="CREATE_DATE"/>
+		<result property="c_writename" column="C_WRITENAME"/>
+		<result property="c_writerno" column="C_WRITERNO"/>
+	</resultMap>
+
+
+	<resultMap id="memberResultMap" type="Member">
+		<id property="no" column="USER_NO"/>
+		<result property="id" column="USER_ID"/>
+		<result property="password" column="USER_PWD"/>
+		<result property="name" column="NAME"/>
+		<result property="role" column="ROLE"/>
+		<result property="phone" column="PHONE"/>
+		<result property="email" column="EMAIL"/>
+		<result property="birth" column="BIRTH"/>
+		<result property="address" column="ADDRESS"/>
+		<result property="searchMe" column="SEARCH_ME"/>
+		<result property="gender" column="GENDER"/>
+		<result property="minimi" column="MINIMI"/>
+		<result property="createDate" column="CREATE_DATE"/>
+		<result property="acorn" column="ACORN"/>
+		<result property="status" column="STATUS"/>
+	</resultMap>	
+	
+	<resultMap id="memberMinihomeResultmap" type="MemberMinihome">
+		<id property="minihomeNo" column="MINIHOME_NO"/>
+		<result property="profile" column="PROFILE"/>
+		<result property="intro" column="INTRO"/>
+		<result property="mood" column="MOOD"/>
+		<result property="mbti" column="MBTI"/>
+		<result property="miniroom" column="MINIROOM"/>
+		<result property="theme" column="THEME"/>
+		<result property="mhAccess" column="MH_ACCESS"/>
+		<association property="member" javaType="Member" columnPrefix="M_"  
+					 resultMap="memberResultMap"/>
+	</resultMap>
+	
+	<resultMap id="minihomeTotalResultMap" type="MinihomeTotal">
+	<id property="minihomeNo" column="H_MINIHOME_NO"/>
+		<result property="profile" column="H_PROFILE"/>
+		<result property="intro" column="H_INTRO"/>
+		<result property="count" column="T_COUNT"/>
+		<result property="rank" column="T_RANK" />
+		<association property="member" javaType="Member" columnPrefix="M_"  
+                	 resultMap="memberResultMap"/>
+		<association property="minihome" javaType="Minihome" columnPrefix="H_"  
+                	 resultMap="minihomeResultMap"/>
+	</resultMap>
+	
+	<!-- 미니홈피 최근 게시글을 가져오기 위한 쿼리문 -->
+	<resultMap id="boardListResultMap" type="Board">
+		<id property="no" column="B_NO"/>
+		<result property="title" column="B_TITLE"/>
+		<result property="writerId" column="USER_ID"/>
+		<result property="originalFileName" column="B_ONAME"/>
+		<result property="renamedFileName" column="B_RNAME"/>
+		<result property="readCount" column="B_READCOUNT"/>
+		<result property="createDate" column="B_CDATE"/>
+	</resultMap>
+	
+	<!-- 미니홈피 최근 사진첩 게시글을 가져오기 위한 쿼리문 -->
+	<resultMap id="photoResultMap" type="Photo">
+		<result property="no" column="PHOTO_NO"/>
+		<result property="minihomeNo" column="MINIHOME_NO"/>
+		<result property="folderNo" column="FOLDER_NO"/>
+		<result property="Oname" column="PHOTO_ONAME"/>
+		<result property="Rname" column="PHOTO_RNAME"/>
+		<result property="url" column="PHOTO_URL"/>
+		<result property="title" column="PHOTO_TITLE"/>
+		<result property="comment" column="PHOTO_COMMENT"/>
+		<result property="Cdate" column="PHOTO_DATE"/>
+		<result property="Mdate" column="PHOTO_M_DATE"/>
+		<result property="view" column="PHOTO_VIEW"/>
+		<result property="status" column="PHOTO_STATUS"/>
+		<result property="reportCode" column="REPORT_CODE"/>
+		<result property="report" column="PHOTO_REPORT"/>
+		<collection property="PhotoReply" javaType="PhotoReply" columnPrefix="R_"
+					resultMap="photoReplyResultMap" />
+	</resultMap>
+	
+	<resultMap id="photoReplyResultMap" type="PhotoReply">
+		<result property="no" column="R_NO"/>
+		<result property="photoNo" column="PHOTO_NO"/>
+		<result property="writerId" column="R_WRITERID"/>
+		<result property="comment" column="R_COMMENT"/>
+		<result property="Cdate" column="R_DATE"/>
+		<result property="Mdate" column="R_M_DATE"/>
+		<result property="status" column="R_STATUS"/>
+	</resultMap>
+	
+	<!-- 미니홈피 최근 다이어리 게시글을 가져오기 위한 쿼리문 -->
+	<resultMap id="DiaryResultMap" type="Diary">
+		<id property="dNo" column="D_NO" />
+		<result property="minihomeNo" column="MINIHOME_NO" />
+		<result property="dCate" column="D_CATE" />
+		<result property="title" column="D_TITLE" />
+		<result property="writer" column="D_WRITER_NO" />
+		<result property="content" column="D_CONTENT" />
+		<result property="oFile" column="D_ORIGIN" />
+		<result property="rFile" column="D_RENAME" />
+		<result property="url" column="D_URL" />
+		<result property="createDate" column="D_CREATE_DATE" />
+		<result property="modifyDate" column="D_MODIFY_DATE" />
+		<result property="status" column="D_STATUS" />
+		<result property="folder" column="D_FOLDER" />
+		<association property="member" resultMap="memberResultMap"/>
+	</resultMap>
+	
+	<resultMap id="DiaryReplyResultMap" type="DiaryReply">
+		<id property="dreNo" column="DRE_NO" />
+		<result property="dNo" column="D_NO" />
+		<result property="writer" column="DRE_WRITER_NO" />
+		<result property="content" column="DRE_CONTENT" />
+		<result property="createDate" column="DRE_CREATE_DATE" />
+		<result property="modifyDate" column="DRE_MODIFY_DATE" />
+		<result property="secret" column="DRE_SECRET" />
+		<result property="status" column="DRE_STATUS" />
+		<result property="group" column="DRE_GROUP" />
+		<result property="depth" column="DRE_DEPTH" />
+		<result property="order" column="DRE_ORDER" />
+		<association property="diary" resultMap="DiaryResultMap"/>
+	</resultMap>
+	
+	<!-- 미니홈피 방명록 가져오기 -->
+	<resultMap id="visitorResultMap" type="Visitor">
+		<id property="visitorNo" column="V_NO" />
+		<result property="rowNum" column="ROWNUM" />
+		<result property="minihomeNo" column="MINIHOME_NO" />
+		<result property="reportCode" column="REPORT_CODE" />
+		<result property="createDate" column="V_CREATE_DATE" />
+		<result property="modifyDate" column="V_MODIFY_DATE" />
+		<result property="content" column="V_CONTENT" />
+		<result property="secret" column="V_SECRET" />
+		<result property="report" column="V_REPORT" />
+		<result property="access" column="V_ACCESS" />
+		<result property="status" column="V_STATUS" />
+		<association property="writer" javaType="Member" columnPrefix="M_" 
+				resultMap="com.kh.world.member.model.mapper.MemberMapper.memberResultMap" />
+		<collection property="replies" javaType="arraylist" columnPrefix="R_" resultMap="visitorReplyResultMap" />
+	</resultMap>
+	
+	<resultMap id="visitorReplyResultMap" type="VisitorReply">
+		<id property="vreNo" column="VRE_NO" />
+		<id property="visitorNo" column="V_NO" />
+		<result property="createDate" column="VRE_CREATE_DATE" />
+		<result property="modifyDate" column="VRE_MODIFY_DATE" />
+		<result property="content" column="VRE_CONTENT" />
+		<result property="secret" column="VRE_SECRET" />
+		<result property="access" column="VRE_ACCESS" />
+		<result property="status" column="VRE_STATUS" />
+		<result property="depth" column="VRE_DEPTH" />
+		<result property="group" column="VRE_GROUP" />
+		<result property="step" column="VRE_STEP" />
+		<association property="writer" javaType="Member" columnPrefix="VRM_" 
+				resultMap="com.kh.world.member.model.mapper.MemberMapper.memberResultMap" />
+	</resultMap>
+	
+	<!-- 메인 일촌 수 -->
+	<resultMap id="IlchonResultMap" type="Ilchon">
+		<id property="indexNo" column="ILCHON_IDX"/>
+		<result property="userNo" column="USER_NO"/>
+		<result property="ilchonNo" column="ILCHON_NO"/>
+		<result property="ilchonNick" column="ILCHON_NICK"/>
+		<result property="ilchonCate" column="ILCHON_CATE"/>
+		<result property="ilchonStatus" column="ILCHON_STATUS"/>
+	</resultMap>
+	
+	   <!-- 조회수 높은 사람 1등 -->
+     <select id="findMinihomeCountRank1" resultMap="minihomeTotalResultMap">
+        SELECT *
+      FROM (
+         SELECT H.MINIHOME_NO AS H_MINIHOME_NO,
+               M.USER_NO AS M_USER_NO,
+               M.USER_ID AS M_USER_ID,
+                  M.NAME AS M_NAME,
+                  M.STATUS AS M_STATUS,
+                  H.PROFILE AS H_PROFILE,
+                  H.INTRO AS H_INTRO,
+                  T.T_COUNT AS T_COUNT,
+                  ROW_NUMBER() over (ORDER BY T.T_COUNT DESC) AS T_RANK
+         FROM MINIHOME H
+         INNER JOIN MEMBER M ON (M.USER_NO = H.USER_NO)
+         INNER JOIN MINIHOME_TOTAL T ON (T.MINIHOME_NO = H.MINIHOME_NO)
+      ) HOMERANK
+      WHERE HOMERANK.T_RANK = 1 AND HOMERANK.M_STATUS = 'Y'
+   </select>
+   
+   	<!-- 조회수 높은 사람 2등 -->
+	<select id="findMinihomeCountRank2" resultMap="minihomeTotalResultMap">
+		SELECT *
+		FROM (
+			SELECT H.MINIHOME_NO AS H_MINIHOME_NO,
+				   M.USER_NO AS M_USER_NO,
+				   M.USER_ID AS M_USER_ID,
+			   	   M.NAME AS M_NAME,
+			   	   M.STATUS AS M_STATUS,
+			   	   H.PROFILE AS H_PROFILE,
+			   	   H.INTRO AS H_INTRO,
+			   	   T.T_COUNT AS T_COUNT,
+			   	   ROW_NUMBER() over (ORDER BY T.T_COUNT DESC) AS T_RANK
+			FROM MINIHOME H
+			INNER JOIN MEMBER M ON (M.USER_NO = H.USER_NO)
+			INNER JOIN MINIHOME_TOTAL T ON (T.MINIHOME_NO = H.MINIHOME_NO)
+		) HOMERANK
+		WHERE HOMERANK.T_RANK = 2 AND HOMERANK.M_STATUS = 'Y'
+	</select>
+	
+	<!-- 미니홈피 최근 게시글 -->
+	<select id="findBoardNo" resultMap="boardListResultMap">
+		SELECT B_NO,
+			   B_TITLE
+		FROM BOARD
+		WHERE B_STATUS = 'Y'
+		ORDER BY USER_NO = #{userNo} DESC LIMIT 1;
+	</select>
+	
+	<!-- 미니홈피 최근 사진첩 -->
+	<select id="findPhotoNo" resultMap="photoResultMap">
+		SELECT PHOTO_NO,
+			   PHOTO_TITLE
+		FROM PHOTO
+		WHERE PHOTO_STATUS = 'Y'
+		ORDER BY MINIHOME_NO = #{minihomeNo} DESC LIMIT 1;
+	</select>
+	
+	<!-- 미니홈피 최근 다이어리 -->
+	<select id="findDiaryNo" resultMap="DiaryResultMap">
+		SELECT D_NO,
+			   D_TITLE
+		FROM DIARY
+		WHERE D_STATUS = 'Y'
+		ORDER BY MINIHOME_NO = #{minihomeNo} DESC LIMIT 1;
+	</select>
+	
+	<!-- 미니홈피 당일 게시판 개수 -->
+	<select id="minihomeBoard" resultType="_int">
+		SELECT COUNT(*) 
+		FROM BOARD
+		WHERE date(B_CDATE) = date(now()) AND USER_NO = #{userNo} AND B_STATUS = 'Y'
+	</select>
+	
+	<!-- 미니홈피 게시판 총 개수 -->
+	<select id="minihomeBoardTotal" resultType="_int">
+		SELECT COUNT(*)
+		FROM BOARD
+		WHERE USER_NO = #{userNo} AND B_STATUS = 'Y'
+	</select>
+	
+	<!-- 미니홈피 사진첩 당일 카운트 -->
+	<select id="minihomePhoto" resultType="_int">
+		SELECT COUNT(*) 
+		FROM PHOTO
+		WHERE date(PHOTO_DATE) = date(now()) AND MINIHOME_NO = #{minihomeNo} AND PHOTO_STATUS = 'Y'
+	</select>
+	
+	<!-- 미니홈피 사진첩 총 카운트 -->
+	<select id="minihomePhotoTotal" resultType="_int">
+		SELECT COUNT(*) 
+		FROM PHOTO
+		WHERE MINIHOME_NO = #{minihomeNo} AND PHOTO_STATUS = 'Y'
+	</select>
+	
+	<!-- 미니홈피 다이어리 당일 카운트 -->
+	<select id="minihomeDiary" resultType="_int">
+		SELECT COUNT(*) 
+		FROM DIARY
+		WHERE date(D_CREATE_DATE) = date(now()) AND MINIHOME_NO = #{minihomeNo} AND D_STATUS = 'Y'
+	</select>
+	
+	<!-- 미니홈피 다이어리 총 카운트 -->
+	<select id="minihomeDiaryTotal" resultType="_int">
+		SELECT COUNT(*) 
+		FROM DIARY
+		WHERE MINIHOME_NO = #{minihomeNo} AND D_STATUS = 'Y'
+	</select>
+	
+	<!-- 미니홈피 방명록 당일 개수 -->
+	<select id="minihomeVisitor" resultType="_int">
+	SELECT COUNT(*)
+	FROM VISITOR
+	WHERE date(V_CREATE_DATE) = date(now()) AND MINIHOME_NO = #{minihomeNo} AND V_STATUS = 'Y'
+	</select>
+	
+	<!-- 미니홈피 방명록 총 개수 -->
+	<select id="minihomeTotal" resultType="_int">
+		SELECT COUNT(*)
+		FROM VISITOR
+		WHERE MINIHOME_NO = #{minihomeNo} AND V_STATUS = 'Y'
+	</select>
+	
+	<!-- 메인 방명록 수 -->
+	<select id="visitorCount" resultType="_int">
+		SELECT COUNT(*)
+		FROM VISITOR
+		WHERE V_WRITER_NO = #{userNo} AND V_STATUS = 'Y'
+	</select>
+	
+	<!-- 메인 일촌 수 -->
+	<select id="ilchonCount" resultType="_int">
+		SELECT COUNT(*)
+		FROM ILCHON
+		WHERE USER_NO = #{userNo} AND ILCHON_STATUS = 'Y'
+	</select>
+	
+	<!-- 메인 쪽지 수  -->
+	<select id="messageCount" resultType="_int">
+		SELECT COUNT(*)
+		FROM MESSAGE
+		WHERE M_USER_NO = #{userNo} AND M_STATUS = 'Y'
+	</select>
+	
+	<!-- 메인 도토리 수 -->
+	<select id="acornCount" resultType="_int">
+		SELECT ACORN
+		FROM MEMBER
+		WHERE USER_NO = #{userNo} AND STATUS = 'Y'
+	</select>
+	
+	
+	
+	
+	<select id="selectUserNo" resultType="_int" >
+		SELECT USER_NO
+		FROM
+		MINIHOME
+		WHERE MINIHOME_NO = #{minihomeNo}
+	</select>	
+	
+	<!-- 2등까지 한번에 불러오는 쿼리문 -->
+	<!-- 	<select id="findMinihomeCountRank" resultMap="minihomeTotalResultMap">
+			SELECT H.MINIHOME_NO AS H_MINIHOME_NO,
+				   M.USER_NO AS M_USER_NO,
+				   M.USER_ID AS M_USER_ID,
+				   M.NAME AS M_NAME,
+				   M.STATUS AS M_STATUS,
+				   H.PROFILE AS H_PROFILE,
+				   H.INTRO AS H_INTRO,
+				   T.T_COUNT AS T_COUNT,
+				   ROW_NUMBER() over (ORDER BY T.T_COUNT DESC) AS 'T_RANK'
+			FROM MINIHOME H
+			INNER JOIN MEMBER M ON (M.USER_NO = H.USER_NO)
+			INNER JOIN MINIHOME_TOTAL T ON (T.MINIHOME_NO = H.MINIHOME_NO)
+			WHERE M.STATUS = 'Y'
+			ORDER BY T.T_COUNT DESC LIMIT 2
+		</select> -->
+
+
+<insert id="insertilchonSay">
+	INSERT INTO COMENT(C_NO, MINIHOME_NO, C_COMENT, CREATE_DATE, C_WRITENAME, C_WRITERNO) 
+		VALUES
+	((select nextval('COMMENT_SEQ') from dual), ${minihomeNo}, '${ilchonsay}', DEFAULT, '${user_name}', ${user_no})
+</insert>
+
+<select id="getCommentList" resultMap="comentResultMap">
+	SELECT C_NO, C_COMENT,  DATE_FORMAT(CREATE_DATE, '%Y-%m-%d') AS CREATE_DATE
+	 , C_WRITENAME, MINIHOME_NO , C_WRITERNO
+	FROM COMENT
+	WHERE MINIHOME_NO = #{minihomeNo};
+
+</select>
+
+<update id="updateilchonSay">
+	UPDATE COMENT SET C_COMENT = '${content}'
+	WHERE C_NO = ${cNo} AND C_WRITERNO = ${user_no}
+</update>
+
+<delete id="deleteilchonSay">
+	DELETE FROM COMENT WHERE C_NO = ${cNo}
+</delete>
+
+
+<!-- 2등까지 한번에 불러오는 쿼리문 -->
+<!-- 	<select id="findMinihomeCountRank" resultMap="minihomeTotalResultMap">
+		SELECT H.MINIHOME_NO AS H_MINIHOME_NO,
+			   M.USER_NO AS M_USER_NO,
+			   M.USER_ID AS M_USER_ID,
+			   M.NAME AS M_NAME,
+			   M.STATUS AS M_STATUS,
+			   H.PROFILE AS H_PROFILE,
+			   H.INTRO AS H_INTRO,
+			   T.T_COUNT AS T_COUNT,
+			   ROW_NUMBER() over (ORDER BY T.T_COUNT DESC) AS 'T_RANK'
+		FROM MINIHOME H
+		INNER JOIN MEMBER M ON (M.USER_NO = H.USER_NO)
+		INNER JOIN MINIHOME_TOTAL T ON (T.MINIHOME_NO = H.MINIHOME_NO)
+		WHERE M.STATUS = 'Y'
+		ORDER BY T.T_COUNT DESC LIMIT 2
+	</select> -->
+
+</mapper>

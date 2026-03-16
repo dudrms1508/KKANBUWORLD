@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+
+	<properties>
+		
+		<property name="user_question" value="user_question" />
+		<property name="col_q_bno" value="q_bno" />
+		<property name="col_q_menu" value="q_menu" />
+		<property name="col_q_title" value="q_title" />
+		<property name="col_q_content" value="q_content" />
+		<property name="col_q_date" value="q_date" />
+		<property name="col_q_answer" value="q_answer" />
+		<property name="col_q_secret" value="q_secret" />
+
+		<property name="announce_board" value="announce_board" />
+		<property name="col_an_bno" value="an_bno" />		
+		<property name="col_an_title" value="an_title" />
+		<property name="col_an_content" value="an_content" />
+		<property name="col_an_date" value="an_date" />
+		<property name="col_an_menu" value="an_menu" />
+	
+		<property name="gb_board" value="gb_board" />
+		<property name="col_g_bno" value="g_bno" />
+		<property name="col_userid" value="userid" />
+		<property name="col_user_name" value="user_name" />
+		<property name="col_g_content" value="g_content" />
+		<property name="col_g_date" value="g_date" />
+		<property name="col_g_secret" value="g_secret" />
+		<property name="col_home_id" value="home_id" />
+		<property name="col_g_reply" value="g_reply" />
+
+
+		<property name="member" value="member" />
+		<property name="password" value="password" />
+		<property name="col_user_gender" value="user_gender" />
+		<property name="col_user_name" value = "user_name"/>
+		<property name="col_user_email" value="user_email" />
+		<property name="col_user_birth" value="user_birth" />
+		<property name="col_user_phone" value="user_phone" />
+		<property name="col_user_state" value="user_state" />
+		<property name="col_user_photo" value="user_photo" />
+
+
+		<property name="notice_board" value="notice_board" />
+		<property name="col_nt_bno" value="nt_bno" />
+		<property name="col_nt_folder" value="nt_folder" />
+		<property name="col_nt_userid" value="userid" />
+		<property name="col_nt_username" value="user_name" />
+		<property name="col_nt_title" value="nt_title" />
+		<property name="col_nt_content" value="nt_content" />
+		<property name="col_nt_date" value="nt_date" />
+		<property name="col_nt_rno_cnt" value="nt_rno_cnt" />
+		<property name="col_nt_cnt" value="nt_cnt" />
+		<property name="col_nt_file" value="nt_file" />
+
+		<property name="notice_reply" value="notice_reply" />
+		<property name="col_nt_rno" value="nt_rno" />
+		<property name="col_nt_reply_date" value="nt_reply_date" />
+		<property name="col_nt_reply_content"
+			value="nt_reply_content" />
+
+
+
+		<property name="friends_request" value="friends_request" />
+		<property name="col_send_userid" value="send_userid" />
+		<property name="col_send_user_name" value="send_user_name" />
+		<property name="col_send_user_nickname"
+			value="send_user_nickname" />
+		<property name="col_get_userid" value="get_userid" />
+		<property name="col_get_user_name" value="get_user_name" />
+		<property name="col_get_user_nickname" value="get_user_nickname" />
+		<property name="col_message" value="message" />
+		<property name="col_send_date" value="send_date" />
+		<property name="col_request_status" value="request_status" />
+
+		<property name="friends" value="friends" />
+		<property name="col_fr_id" value="fr_id" />
+		<property name="col_fr_user_name" value="fr_user_name" />
+		<property name="col_nickName" value="nickName" />
+
+
+		<property name="frc_board" value="frc_board" />
+		<property name="col_frc_bno" value="frc_bno" />
+		<property name="col_nickname" value="nickname" />
+		<property name="col_userid" value="userid" />
+		<property name="col_user_name" value="user_name" />
+		<property name="col_frc_date" value="frc_date" />
+		<property name="col_frc_content" value="frc_content" />
+		<property name="col_home_id" value="home_id" />
+		<property name="col_replycnt" value="replycnt" />
+
+		<property name="frc_reply" value="frc_reply" />
+		<property name="col_frc_rno" value="frc_rno" />
+		<property name="col_frc_reply_content"
+			value="frc_reply_content" />
+		<property name="col_frc_reply_date" value="frc_reply_date" />
+		
+		 
+ 		<property name="col_gallery_board" value="gallery_board"/>
+   		<property name="col_gl_bno" value="gl_bno"/>
+   	    <property name="col_gl_folder" value="gl_folder"/>
+   	    <property name="col_homeId" value="homeId"/>
+ 	    <property name="col_gl_title" value="gl_title"/>
+ 	    <property name="col_gl_img" value="gl_img"/>
+ 	    <property name="col_gl_content" value="gl_content"/>
+ 	    <property name="col_gl_date" value="gl_date"/>
+ 	    <property name="col_user_name" value="user_name"/>
+    
+    
+ 	    <property name="col_gallery_reply" value="gallery_reply"/>
+ 	    <property name="col_gl_rno" value="gl_rno"/>
+ 	    <property name="col_gl_bno" value="gl_bno"/>
+  	    <property name="col_homeId" value="homeId"/>
+  	    <property name="col_user_name" value="user_name"/>
+        <property name="col_gl_reply_date" value="gl_reply_date"/>
+   	    <property name="col_gl_reply_content" value = "gl_reply_content"></property>
+   
+    
+ 		<property name="col_folders" value="folders"></property>
+ 	    <property name="col_userid" value="userid"></property>
+ 	    <property name="col_board_name" value="board_name"/>
+ 	    <property name="col_folder_name" value="folder_name"/>
+ 	    
+ 	    <property name="main_form" value="main_form"/>
+ 	    <property name="col_theme" value="theme"/>
+ 	    <property name="col_total_cnt" value="total_cnt"/>
+ 	    <property name="col_today_cnt" value="today_cnt"/>
+ 	    <property name="col_main_title" value="main_title"/>
+ 	    <property name="col_profile_photo" value="profile_photo"/>
+ 	    <property name="col_profile_content" value="profile_content"/>
+ 	    <property name="col_tap_menu" value="tap_menu"/>
+ 	    <property name="col_cnt_date" value="cnt_date"/>
+ 	    
+		<property name="diary_board" value="diary_board"/>
+		<property name="col_d_bno" value="d_bno"/>
+		<property name="col_userid" value="userid"/>
+		<property name="col_d_user_name" value="user_name"/>
+		<property name="col_d_folder" value="d_folder"/>
+		<property name="col_d_content" value="d_content"/>
+		<property name="col_d_date" value="d_date"/>
+		
+		<property name="folders" value="folders"/>
+		<property name="col_board_name" value="board_name"/>
+		<property name="col_folder_name" value="folder_name"/>
+		<property name="col_userid" value="userid"/>
+		
+        <property name="diary_reply" value="diary_reply"/>
+        <property name="col_d_rno" value="d_rno"/>
+        <property name="col_d_bno" value="d_bno"/>
+        <property name="col_userid" value="userid"/>
+        <property name="col_d_reply_content" value="d_reply_content"/>
+        <property name="col_d_reply_date" value="d_reply_date"/>  
+ 	    
+
+	</properties>
+	<typeAliases>
+		<package name="com.spring.helloworld.domain" />
+	</typeAliases>
+
+	
+
+
+
+</configuration>

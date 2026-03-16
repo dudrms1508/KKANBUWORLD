@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.kh.world.qna.model.mapper.QNAMapper">
+
+	<resultMap id="qnaResultMap" type="QNA">
+		<result property="no" column="QNA_NO"/>
+		<result property="userNo" column="USER_NO"/>
+		<result property="title" column="QNA_TITLE"/>
+		<result property="email" column="QNA_EMAIL"/>
+		<result property="category" column="QNA_CATEGORY"/> 
+		<result property="content" column="QNA_CONTENT"/>
+		<result property="q_Date" column="QNA_Q_DATE"/>
+		<result property="answer" column="QNA_ANSWER"/>
+		<result property="status" column="QNA_STATUS"/>
+		<result property="a_Date" column="QNA_A_DATE"/>
+		<!-- <association property="category" javaType="QNA_CATEGORY" columnPrefix="C_" 
+			resultMap="qnacategoryResultMap"/> -->
+	</resultMap>
+	
+	<resultMap id="qnacategoryResultMap" type="QNA_Category">
+		<result property="categoryCode" column="QNA_CATEGORY_CODE"/>
+		<result property="categoryName" column="QNA_CATEGORY"/>
+	</resultMap>
+
+
+
+	<insert id="insertQNA" parameterType="map"
+			useGeneratedKeys="true" keyColumn="QNA_NO" keyProperty="no">
+		INSERT INTO QNA(
+			QNA_NO,
+			QNA_TITLE,
+			USER_NO,
+			QNA_EMAIL,
+			QNA_CATEGORY,
+			QNA_CONTENT,  
+			QNA_Q_DATE,
+			QNA_A_DATE
+		)
+		 VALUES(
+		 	(SELECT NEXTVAL('qna_seq') FROM DUAL),
+		 	#{qna.title},
+			#{loginMember.no},
+		 	#{qna.email},
+		 	#{qna.category},
+		 	#{qna.content},
+		 	DEFAULT,
+		 	NULL
+		 )
+		
+	</insert>
+	
+	<select id="selectAll" resultMap="qnacategoryResultMap">
+		SELECT QNA_CATEGORY_CODE,
+				QNA_CATEGORY
+		FROM QNA_CATEGORY
+	</select>
+	
+</mapper>

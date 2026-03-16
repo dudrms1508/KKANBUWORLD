@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.helloworld.QuestionMapper">
+
+	<insert id="insertquestion">
+		insert into ${user_question}(${col_userid},
+		${col_user_name},
+		${col_q_menu},
+		${col_q_title}, ${col_q_content},
+		${col_q_secret})
+		values(#{userid},
+		#{user_name}, #{q_menu}, #{q_title},
+		#{q_content}, #{q_secret})
+	</insert>
+
+	<select id="select_question" resultType="QuestionVO">
+		select * from
+		${user_question} order by ${col_q_bno} desc
+	</select>
+
+	<select id="select_q_menu" resultType="QuestionVO">
+		select
+		b.q_bno, b.userid,
+		b.user_name ,b.q_menu, b.q_title ,b.q_content,
+		b.q_date, b.q_answer
+		,b.q_secret
+
+		from (
+		select rownum rn, a.*
+		from (
+		select * from
+		${user_question}
+		where ${col_q_menu} = #{q_menu } and ${col_q_answer}
+		IS NULL
+		order by ${col_q_bno} desc
+		) a
+		) b
+		where rn between #{start} and
+		#{end}
+
+
+
+
+	</select>
+
+
+	<select id="menu_total_count" resultType="Integer">
+		select count(*) from
+		${user_question} where ${col_q_menu} = #{q_menu}
+	</select>
+
+	<select id="select_my_Question_All" resultType="QuestionVO">
+
+		select
+		b.q_bno,
+		b.userid,
+		b.user_name ,b.q_menu, b.q_title ,b.q_content,
+		b.q_date,
+		b.q_answer
+		,b.q_secret
+
+		from (
+		select rownum rn, a.*
+		from (
+		select * from
+		${user_question}
+		where ${col_userid} = #{userid }
+		order by ${col_q_bno}
+		desc
+		) a
+		) b
+		where rn between #{start} and #{end}
+
+
+
+
+
+
+	</select>
+
+	<select id="select_my_Question_By_menu" resultType="QuestionVO">
+
+
+
+
+
+		select
+		b.q_bno, b.userid,
+		b.user_name ,b.q_menu, b.q_title ,b.q_content,
+		b.q_date, b.q_answer
+		,b.q_secret
+
+		from (
+		select rownum rn, a.*
+		from (
+		select * from
+		${user_question} where ${col_userid} = #{userid }
+		and
+		${col_q_menu} = #{q_menu }
+		order by ${col_q_bno} desc
+		) a
+		) b
+		where rn
+		between #{start} and #{end}
+
+	</select>
+
+
+	<update id="question_update">
+		update ${user_question}
+		set ${col_q_answer} =
+		#{q_answer}
+		where ${col_q_bno} = #{q_bno}
+	</update>
+
+
+
+	<select id="question_count" resultType="Integer">
+		select count(*) from
+		${user_question}
+	</select>
+	<select id="total_count_answer" resultType="Integer">
+		select count(*) from
+		${user_question}
+		where ${col_q_answer} IS NOT NULL
+	</select>
+
+
+	<select id="question_count_not_answer" resultType="Integer">
+		select
+		count(*) from ${user_question}
+		where ${col_q_answer} IS NULL
+	</select>
+	<select id="select_bno" resultType="QuestionVO">
+		select * from
+		${user_question} where ${col_q_bno} = #{q_bno }
+	</select>
+
+	<select id="select_page" resultType="QuestionVO">
+		select
+		b.q_bno, b.userid,
+		b.user_name ,b.q_menu, b.q_title ,b.q_content, b.q_date, b.q_answer
+		,b.q_secret
+
+		from (
+		select rownum rn, a.*
+		from (
+		select * from
+		${user_question}
+		where ${col_q_answer} IS NULL
+		order by ${col_q_bno}
+		desc
+		) a
+		) b
+		where rn between #{start} and #{end}
+	</select>
+
+
+
+	<select id="select_page_not_null" resultType="QuestionVO">
+		select
+		b.q_bno,
+		b.userid,
+		b.user_name ,b.q_menu, b.q_title ,b.q_content, b.q_date,
+		b.q_answer
+		,b.q_secret
+
+		from (
+		select rownum rn, a.*
+		from (
+		select * from
+		${user_question}
+		where ${col_q_answer} IS NOT NULL
+		order by ${col_q_bno}
+		desc
+		) a
+		) b
+		where rn between #{start} and #{end}
+	</select>
+	<select id="total_count" resultType="Integer">
+		select count(*) 
+		from ${user_question}
+	</select>
+
+	<select id="My_total_count" resultType="Integer">
+		select count(*)
+		from ${user_question} 
+		where ${col_userid} = #{userid}
+	</select>
+
+	<select id="My_menu_total_count" resultType="Integer">
+		select count(*)
+		from ${user_question} 
+		where ${col_userid} = #{userid} 
+		and ${col_q_menu} = #{q_menu}
+	</select>
+
+</mapper>
+
+

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.helloworld.FrcReplyMapper"> <!-- FrcReplyDAOImple NAMESPACE 와 일치시켜야함 -->
+  
+
+  <insert id="frcinsert">
+    insert into ${frc_reply}(${col_nickname}, ${col_userid}, ${col_user_name},
+    ${col_frc_reply_content}, ${col_frc_bno}, ${col_home_id})
+    values(#{nickname}, #{userid}, #{user_name}, 
+    #{frc_reply_content}, #{frc_bno}, #{home_id})
+  </insert>
+  <!-- Oracle insert 테스트
+    insert into frc_reply (nickname, userid, user_name,
+    frc_reply_content, frc_bno, home_id)
+    values ('밥만', 'bobman', '밥만선', 
+    '안녕', 1, 'bobdoni');
+   -->
+
+  <select id="select_all_by_bno" resultType="FrcReplyVO">
+    select * from ${frc_reply}
+    where ${col_frc_bno} = #{frc_bno}
+    order by ${col_frc_rno}
+  </select>
+  <!-- Oracle select 테스트
+    select * from frc_reply
+    where frc_bno = 1
+    order by frc_rno;
+   -->
+  
+  <update id="update">
+    update ${frc_reply}
+    set ${col_frc_reply_content} = #{frc_reply_content}
+    where ${col_frc_rno} = #{frc_rno}
+  </update>
+  <!-- Oracle update 테스트
+    update frc_reply
+    set frc_reply_content = 'update테스트'
+    where frc_rno = 1;
+   -->
+   
+   <delete id="delete">
+    delete from ${frc_reply}
+    where ${col_frc_rno} = #{frc_rno}
+   </delete>
+  <!-- Oracle delete 테스트
+    delete from frc_reply
+    where frc_rno = 1;
+   -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</mapper>

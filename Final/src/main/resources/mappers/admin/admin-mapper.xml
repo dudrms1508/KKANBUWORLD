@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+	
+<mapper namespace="com.kh.world.admin.model.mapper.AdminMapper">
+	<sql id="selectMemberSql">
+		SELECT USER_NO,
+				USER_ID,
+				USER_PWD,
+				NAME,
+				ROLE,
+				PHONE,
+				EMAIL,
+				BIRTH,
+				ADDRESS,
+				SEARCH_ME,
+				GENDER,
+				MINIMI,
+				CREATE_DATE,
+				ACORN,
+				STATUS
+		FROM MEMBER 
+	</sql>
+	
+	<sql id="selectProductSql">
+		SELECT PRODUCT_CODE,
+				CATEGORY_CODE,
+				PRODUCT_NAME,
+				PRODUCT_PRICE,
+				PRODUCT_DATE,
+				STATUS,
+				PRODUCT_FILE,
+				PRODUCT_URL
+		FROM PRODUCT 
+	</sql>
+	
+	<sql id="selectQnaSql">
+		SELECT QNA_NO,
+				USER_NO,
+				QNA_TITLE,
+				QNA_EMAIL,
+				QNA_CATEGORY,
+				QNA_CONTENT,
+				QNA_Q_DATE,
+				QNA_ANSWER,
+				QNA_STATUS,
+				QNA_A_DATE
+		FROM QNA 
+	</sql>
+	
+	<resultMap id="memberResultMap" type="Member">
+		<id property="no" column="USER_NO"/>
+		<result property="id" column="USER_ID"/>
+		<result property="password" column="USER_PWD"/>
+		<result property="name" column="NAME"/>
+		<result property="role" column="ROLE"/>
+		<result property="phone" column="PHONE"/>
+		<result property="email" column="EMAIL"/>
+		<result property="birth" column="BIRTH"/>
+		<result property="address" column="ADDRESS"/>
+		<result property="searchMe" column="SEARCH_ME"/>
+		<result property="gender" column="GENDER"/>
+		<result property="minimi" column="MINIMI"/>
+		<result property="createDate" column="CREATE_DATE"/>
+		<result property="acorn" column="ACORN"/>
+		<result property="status" column="STATUS"/>
+	</resultMap>
+	
+	<resultMap id="productResultMap" type="Product">
+		<id property="productCode" column="PRODUCT_CODE"/>
+		<result property="categoryCode" column="CATEGORY_CODE"/>
+		<result property="productName" column="PRODUCT_NAME"/>
+		<result property="productPrice" column="PRODUCT_PRICE"/>
+		<result property="productDate" column="PRODUCT_DATE"/>
+		<result property="status" column="STATUS"/>
+		<result property="productFile" column="PRODUCT_FILE"/>
+		<result property="productUrl" column="PRODUCT_URL"/>
+	</resultMap>
+	
+	<resultMap id="reportResultMap" type="Report">
+      <result property="no" column="REPORT_NO"/>
+      <result property="category" column="CATEGORYNAME"/>
+      <result property="userId" column="USER_ID"/>
+      <result property="content" column="CONTENT"/>
+      <result property="status" column="STATUS"/>
+      <result property="boardNo" column="ALLPK_NO"/>
+      <result property="reportCode" column="REPORT_CODE"/>
+      <result property="date" column="DATE"/>
+   </resultMap>
+	
+	<resultMap id="qnaResultMap" type="QNA">
+      <result property="no" column="QNA_NO"/>
+      <result property="userNo" column="USER_NO"/>
+      <result property="userId" column="USER_ID"/>
+      <result property="title" column="QNA_TITLE"/>
+      <result property="email" column="QNA_EMAIL"/>
+      <result property="category" column="QNA_CATEGORY"/>
+      <result property="content" column="QNA_CONTENT"/>
+      <result property="q_Date" column="QNA_Q_DATE"/>
+      <result property="answer" column="QNA_ANSWER"/>
+      <result property="status" column="QNA_STATUS"/>
+      <result property="a_Date" column="QNA_A_DATE"/>
+      <!-- <collection property="category" resultMap="qnacategoryResultMap"/> -->
+   </resultMap>
+   
+   <resultMap id="qnacategoryResultMap" type="QNA_Category">
+      <result property="categoryCode" column="QNA_CATEGORY_CODE"/>
+      <result property="categoryName" column="QNA_CATEGORY"/>
+   </resultMap>
+	
+	<!-- 회원관리 -->
+	<select id="selectMemberCount" resultType="_int">
+		SELECT COUNT(*) FROM MEMBER WHERE STATUS IN ('Y','S')
+	</select>
+	<select id="selectTableCount" resultType="_int">
+		SELECT COUNT(*) FROM ${table} 
+	</select>
+	<select id="selectAllMember" resultMap="memberResultMap">
+		<include refid="selectMemberSql"/>
+		WHERE STATUS IN ('Y','S')
+		ORDER BY NAME DESC
+	</select>
+	
+	<update id="changeStatus" parameterType="map">
+		UPDATE MEMBER
+		SET STATUS = #{state}
+		WHERE USER_NO = #{no}
+	</update>
+	
+	<select id="selectMemberById" parameterType="string" resultMap="memberResultMap">
+	
+		<include refid="selectMemberSql"/>
+		
+		WHERE USER_ID = #{id} AND STATUS='Y'
+	</select>
+	
+	<!-- <delete id="deleteMember" parameterType="_int">
+		DELETE FROM MEMBER WHERE USER_NO = #{no}
+	</delete> -->
+	
+	<!-- 상품관리 -->
+	<select id="selectProductCount" resultType="_int">
+		SELECT COUNT(*) FROM PRODUCT WHERE CATEGORY_CODE = #{product}
+	</select>
+	<select id="selectAllProduct" resultMap="productResultMap">
+		<include refid="selectProductSql"/> 
+		WHERE CATEGORY_CODE = #{product}
+		ORDER BY PRODUCT_NAME DESC
+	</select>
+	<insert id="insertProduct" parameterType="Product">
+		<!-- INSERT INTO PRODUCT (
+			PRODUCT_CODE,
+			CATEGORY_CODE,
+			PRODUCT_NAME,
+			PRODUCT_PRICE,
+			PRODUCT_DATE,
+			PRODUCT_FILE,
+			PRODUCT_URL
+		)
+		VALUES(
+			PRODUCT_SEQ.NEXTVAL,
+			#{categoryCode},
+			#{productName},
+			#{productPrice},
+			DEFAULT,
+			#{productFile},
+			#{productUrl}
+		) -->
+		
+		INSERT INTO PRODUCT( 
+			PRODUCT_CODE,
+			CATEGORY_CODE, 
+			PRODUCT_NAME,
+			PRODUCT_PRICE,
+			STATUS,
+			PRODUCT_FILE,
+			PRODUCT_URL
+			) 
+		VALUES(
+			(select nextval('PRODUCT_SEQ') from dual), 
+			#{categoryCode},
+			#{productName},
+			#{productPrice},
+			DEFAULT,
+			#{productUrl},
+			#{productFile}
+		)
+	</insert>
+	
+	<update id="productStatus" parameterType="map">
+		UPDATE PRODUCT
+		SET STATUS = #{state}
+		WHERE PRODUCT_CODE = #{no}
+	</update>
+	
+	<delete id="deleteProduct" parameterType="_int">
+		DELETE FROM PRODUCT WHERE PRODUCT_CODE = #{no}
+	</delete>
+	
+	<!-- 문의관리 -->
+	<select id="selectAllQna" parameterType="QNA" resultMap="qnaResultMap">
+		SELECT QNA_NO,
+				M.USER_NO,
+				USER_ID,
+				QNA_TITLE,
+				QNA_EMAIL,
+				C.QNA_CATEGORY_CODE,
+				C.QNA_CATEGORY,
+				QNA_CONTENT,
+				QNA_Q_DATE,
+				QNA_ANSWER,
+				QNA_STATUS,
+				QNA_A_DATE
+		FROM QNA Q
+		JOIN QNA_CATEGORY C ON (Q.QNA_CATEGORY = C.QNA_CATEGORY_CODE)
+		JOIN MEMBER M  ON (Q.USER_NO = M.USER_NO)
+		WHERE QNA_STATUS = 'N'
+		ORDER BY QNA_NO DESC
+	</select>
+	
+	<select id="selectQnaByNo" parameterType="QNA" resultMap="qnaResultMap">
+	
+		SELECT  QNA_NO,
+				M.USER_NO,
+				USER_ID,
+				QNA_TITLE,
+				QNA_EMAIL,
+				C.QNA_CATEGORY_CODE,
+				C.QNA_CATEGORY,
+				QNA_CONTENT,
+				QNA_Q_DATE,
+				QNA_ANSWER,
+				QNA_STATUS,
+				QNA_A_DATE
+		FROM QNA Q
+		JOIN QNA_CATEGORY C ON (Q.QNA_CATEGORY = C.QNA_CATEGORY_CODE)
+		JOIN MEMBER M  ON (Q.USER_NO = M.USER_NO)
+		WHERE QNA_STATUS = 'N' AND QNA_NO = #{no}
+	</select>
+	
+	<update id="deleteQnaByNo" parameterType="map">
+		UPDATE QNA
+		SET QNA_STATUS = 'Y'
+		WHERE QNA_NO = #{no}
+	</update>
+	
+	
+	<!-- 신고관리 -->
+	<select id="selectAllReport" parameterType="Report" resultMap="reportResultMap">
+		 SELECT REPORT_NO,
+		 		CATEGORYNAME,
+		 		M.USER_NO,
+				M.USER_ID,
+				M.EMAIL,
+				CONTENT,
+				DATE,
+				R.STATUS,
+				RESULT,
+				ALLPK_NO,
+				REPORT_CODE
+		FROM REPORT R
+		JOIN REPORT_CATEGORY C ON (R.CATEGORYCODE = C.CATEGORYCODE)
+		JOIN MEMBER M  ON (R.USER_ID = M.USER_ID)
+		WHERE R.STATUS = 'N'
+		ORDER BY REPORT_NO DESC
+	</select>
+	
+	<update id="deleteReportByNo" parameterType="map">
+		UPDATE REPORT
+		SET STATUS = 'Y'
+		WHERE REPORT_NO = #{no}
+	</update>
+	
+	
+	
+</mapper>

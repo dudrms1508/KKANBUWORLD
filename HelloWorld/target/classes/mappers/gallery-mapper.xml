@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 수정  -->
+<!-- persistence - daoImple과 동일 해야함 -->
+<mapper namespace="com.spring.helloworld.GalleryBoardMapper">
+	
+	<select id = "select_by_gl_bno" resultType="GalleryBoardVO">
+  	select * from ${col_gallery_board} where ${col_gl_bno} = #{gl_bno} 
+    </select>
+	
+	<select id = "select_folder" resultType="String" >
+		select folder_name from folders where ${col_userid} = #{userid} and board_name = 'gallery_board'
+	</select>
+	
+	<select id = "select_folder_list" resultType="GalleryBoardVO">
+		select * from ${col_gallery_board} where ${col_gl_folder} = #{gl_folder} and ${col_userid} = #{userid} order by ${col_gl_bno} desc
+	</select>
+	
+	
+   <!-- userid = 로그인 했을때 체크  -->	
+  <insert id="insert" >
+    insert into ${col_gallery_board}(${col_gl_folder}, ${col_userid}, ${col_gl_title} , ${col_gl_img}, ${col_gl_content} , ${col_user_name})
+    values(#{gl_folder}, #{userid}, #{gl_title}, #{gl_img} , #{gl_content} , #{user_name})
+  </insert>
+	
+	
+  <select id = "total_count" resultType = "Integer">
+  	select count(*) total_cnt from ${col_gallery_board} where ${col_userid} = #{userid}
+  </select>
+  
+  <select id = "total_count_folder" resultType = "Integer">
+  	select count(*) total_cnt from ${col_gallery_board} where ${col_userid} = #{userid} and ${col_gl_folder} = #{folder_name}
+  </select>
+  
+  
+  <select id = "paging" resultType = "GalleryBoardVO">
+  	select 
+  	 b.*
+  	 from(
+  	 	select rownum rn, a.*
+  	 	from(
+  	 		select * from ${col_gallery_board} where ${col_userid} = #{userid} order by ${col_gl_bno} desc <!-- userid   폴더 페이징 --> <!-- vo 하나 추가 -->
+  	 	)a
+  	 ) b
+		where rn between #{start} and #{end}  	 
+  </select>	
+	
+  <select id = "paging_folder" resultType = "GalleryBoardVO">
+  	select 
+  	 b.*
+  	 from(
+  	 	select rownum rn, a.*
+  	 	from(
+  	 		select * from ${col_gallery_board} where ${col_userid} = #{userid} and ${col_gl_folder} = #{folder_name}  order by ${col_gl_bno} desc <!-- userid   폴더 페이징 --> <!-- vo 하나 추가 -->
+  	 	)a
+  	 ) b
+		where rn between #{start} and #{end}  	 
+  </select>		
+
+	<update id="update">
+		update ${col_gallery_board}
+		set ${col_gl_folder} = #{gl_folder}, ${col_gl_title} = #{gl_title} , ${col_gl_img} = #{gl_img} , ${col_gl_content} = #{gl_content}, ${col_user_name} = #{user_name}
+		where ${col_gl_bno} = #{gl_bno}
+	</update>
+	
+	<update id="update_noImg_change">
+      update ${col_gallery_board}
+      set ${col_gl_folder} = #{gl_folder}, ${col_gl_title} = #{gl_title} ,${col_gl_content} = #{gl_content}
+      where ${col_gl_bno} = #{gl_bno}
+   	</update>
+	
+	<delete id="delete">
+	delete from ${col_gallery_board}
+	where ${col_gl_bno} = #{gl_bno}
+	</delete>
+	
+	<delete id = "delete_f">
+  	delete from ${col_gallery_board}
+  	where ${col_gl_folder} = #{gl_folder} and ${col_userid} = #{homeId}
+    </delete>
+	
+  <update id="update_fName">
+  	update ${col_gallery_board}
+  	 set ${col_gl_folder} = #{new_folder} 
+  	 where ${col_gl_folder} = #{old_folder} 
+  </update>
+  
+  <update id="update_changePath">
+	update ${col_gallery_board}   	
+  	set ${col_gl_img} = #{changeImgPath} 
+  	where ${col_gl_img} = #{gl_img} 
+  </update>
+  
+  
+  <update id="update_fList">
+  	update folders
+  	 set folder_name = #{folder_List}
+  	 where ${col_userid} = #{userid} and board_name = 'gallery_board'
+  </update>
+  
+
+
+</mapper>

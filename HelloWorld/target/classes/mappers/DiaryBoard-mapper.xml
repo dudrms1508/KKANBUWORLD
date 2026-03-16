@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.helloworld.BoardMapper">
+
+  <select id="select_all" resultType="DiaryBoardVO">
+    select * from ${diary_board}
+    where ${col_userid} = #{userid} order by ${col_d_bno} desc
+  </select>
+
+  <!-- resultType : select를 했을 때 레코드 하나의 타입 - 원래는 패키지 이름을 포함한 전체경로의 클래스 이름을 
+    사용해야 함 - mybatis-config.xml에서 typeAliases 속성을 package로 정의했기 때문에 클래스 이름만 사용할 
+    수 있음 -->
+  <select id="select_by_bno" resultType="DiaryBoardVO">
+    select * from ${diary_board}
+    where ${col_d_bno} = #{d_bno}
+  </select>
+  <!-- #{} : SpEL(스프링에서 사용하는 Expression Language) -->
+
+
+  <insert id="insert">
+    insert into ${diary_board}(${col_d_user_name}, ${col_d_content},
+    ${col_userid}, ${col_d_folder})
+    values (#{user_name}, #{d_content}, #{userid}, #{d_folder})
+  </insert>
+
+
+  <update id="update">
+    update ${diary_board}
+    set ${col_d_content} = #{d_content}, ${col_d_folder} = #{d_folder}
+    where ${col_d_bno} = #{d_bno}
+  </update>
+
+
+  <delete id="delete">
+    delete from ${diary_board}
+    where ${col_d_bno} = #{d_bno}
+  </delete>
+
+
+  <select id="total_count" resultType="Integer">
+    select count(*) total_cnt from ${diary_board}
+    where ${col_userid} = #{userid}
+  </select>
+
+
+  <select id="total_count_by_folder" resultType="Integer">
+    select count(*) total_cnt from ${diary_board}
+    where ${col_userid} = #{userid} and ${col_d_folder} = #{folder_name}
+  </select>
+
+
+
+
+  <select id="paging" resultType="DiaryBoardVO">
+    select
+    b.*
+    from (
+    select rownum rn, a.*
+    from (
+    select * from ${diary_board} where ${col_userid} = #{userid} order by
+    ${col_d_bno} desc
+    ) a
+    ) b
+    where rn between #{start} and #{end}
+  </select>
+
+
+  <select id="paging_by_d_folder" resultType="DiaryBoardVO">
+    select
+    b.*
+    from (
+    select rownum rn, a.*
+    from (
+    select * from ${diary_board} where ${col_userid} = #{userid} and
+    ${col_d_folder} = #{folder_name} order by ${col_d_bno} desc
+    ) a
+    ) b
+    where rn between #{start} and #{end}
+  </select>
+
+
+
+  <select id="select_by_folderList" resultType="String">
+    select ${col_folder_name} from folders where ${col_userid} = #{userid} and
+    ${col_board_name} = 'diary_board'
+  </select>
+
+
+
+  <!-- 폴더 편집 -->
+  <update id="update_folder">
+    update ${diary_board}
+    set ${col_d_folder} = #{d_folder}
+    where ${col_d_bno} = #{d_bno}
+  </update>
+
+  <update id="update_fName">
+    update ${diary_board}
+    set ${col_d_folder} = #{new_folder}
+    where ${col_d_folder} = #{old_folder}
+  </update>
+
+
+  <update id="update_fList">
+    update folders
+    set folder_name = #{folder_List}
+    where ${col_userid} = #{userid} and board_name = 'diary_board'
+  </update>
+
+
+  <!-- 폴더 삭제 -->
+  <delete id="delete_f">
+    delete from ${diary_board}
+    where ${col_d_folder} = #{d_folder} and ${col_userid} = #{userid}
+  </delete>
+
+
+  <!-- 날짜로 출력 -->
+  <select id="select_date" resultType="DiaryBoardVO">
+    select
+    b.*
+    from (
+    select rownum rn, a.*
+    from (
+    select * from ${diary_board} where ${col_userid} = #{userid} and
+    ${col_d_date} like #{d_date} order by ${col_d_bno} desc
+    ) a
+    ) b
+    where rn between #{start} and #{end}
+  </select>
+
+
+
+  <!-- 날짜로 다이어리 검색 시 전체 보여주기 -->
+  <select id="datePagingAll" resultType="Integer">
+    select count(*) total_cnt
+    from ${diary_board}
+    where ${col_userid} = #{userid} order by ${col_d_bno} desc 
+  </select>
+
+  <!-- 날짜로 다이어리 검색 시 해당 날짜만 -->
+  <select id="datePaging" resultType="Integer">
+    select count(*) total_cnt
+    from ${diary_board}
+    where ${col_userid} = #{userid} and ${col_d_date} like #{d_date}
+    order by ${col_d_bno} desc
+  </select>
+
+
+
+</mapper>
+
+
+
+

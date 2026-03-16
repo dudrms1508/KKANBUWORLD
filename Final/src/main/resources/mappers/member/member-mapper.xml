@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.kh.world.member.model.mapper.MemberMapper">
+
+	<sql id="selectMemberSql">
+		SELECT USER_NO,
+				USER_ID,
+				USER_PWD,
+				NAME,
+				ROLE,
+				PHONE,
+				EMAIL,
+				BIRTH,
+				ADDRESS,
+				SEARCH_ME,
+				GENDER,
+				MINIMI,
+				CREATE_DATE,
+				ACORN,
+				STATUS
+		FROM MEMBER 
+	</sql>
+	
+	<resultMap id="memberResultMap" type="Member">
+		<id property="no" column="USER_NO"/>
+		
+		<result property="id" column="USER_ID"/>
+		<result property="password" column="USER_PWD"/>
+		<result property="name" column="NAME"/>
+		<result property="role" column="ROLE"/>
+		<result property="phone" column="PHONE"/>
+		<result property="email" column="EMAIL"/>
+		<result property="birth" column="BIRTH"/>
+		<result property="address" column="ADDRESS"/>
+		<result property="searchMe" column="SEARCH_ME"/>
+		<result property="gender" column="GENDER"/>
+		<result property="minimi" column="MINIMI"/>
+		<result property="createDate" column="CREATE_DATE"/>
+		<result property="acorn" column="ACORN"/>
+		<result property="status" column="STATUS"/>
+	</resultMap>
+	
+
+	<resultMap id="memberMinihomeResultmap" type="MemberMinihome">
+		<id property="minihomeNo" column="MINIHOME_NO"/>
+		<result property="profile" column="PROFILE"/>
+		<result property="intro" column="INTRO"/>
+		<result property="mood" column="MOOD"/>
+		<result property="mbti" column="MBTI"/>
+		<result property="miniroom" column="MINIROOM"/>
+		<result property="theme" column="THEME"/>
+		<result property="mhAccess" column="MH_ACCESS"/>
+		<association property="member" javaType="Member" columnPrefix="M_"  
+					 resultMap="memberResultMap"/>
+	</resultMap>
+
+	
+	<select id="selectMemberById" parameterType="string" resultMap="memberResultMap">
+	
+		<include refid="selectMemberSql"/>
+		
+		WHERE USER_ID = #{id} AND STATUS='Y'
+	</select>
+	
+	<select id="selectCount" resultType="_int" >
+		SELECT COUNT(*) FROM MEMBER
+	</select>
+	
+	<select id="findId" resultMap="memberResultMap">
+		SELECT	USER_NO, USER_ID, USER_PWD,NAME, ROLE,PHONE,EMAIL,BIRTH,ADDRESS,SEARCH_ME,GENDER,MINIMI,CREATE_DATE,ACORN,STATUS
+		FROM	MEMBER
+		WHERE  PHONE = #{phone} AND NAME =#{name} AND BIRTH = #{birth}
+	</select>
+	
+	<select id="findPwd" resultMap="memberResultMap">
+		SELECT	USER_NO, USER_ID, USER_PWD,NAME, ROLE,PHONE,EMAIL,BIRTH,ADDRESS,SEARCH_ME,GENDER,MINIMI,CREATE_DATE,ACORN,STATUS
+		FROM	MEMBER
+		WHERE  NAME =#{name} AND USER_ID = #{id} AND PHONE = #{phone} AND EMAIL=#{email} AND BIRTH = #{birth}
+	</select>
+	
+	<update id="updatePwd">
+		UPDATE MEMBER
+		SET USER_PWD = #{password}
+		WHERE USER_NO = #{member.no}
+	</update>
+	
+	<select id="findMinihomeByNo" parameterType="_int" resultMap="memberMinihomeResultmap">
+		SELECT MINIHOME_NO,
+			   PROFILE,
+			   INTRO,
+			   MOOD,
+			   MBTI,
+			   MINIROOM,
+			   THEME,
+			   MH_ACCESS,
+			   M.USER_NO AS M_USER_NO,
+			   USER_ID AS M_USER_ID,
+			   USER_PWD AS M_USER_PWD,
+			   NAME AS M_NAME,
+			   ROLE AS M_ROLE,
+			   PHONE AS M_PHONE,
+			   EMAIL AS M_EMAIL,
+			   BIRTH AS M_BIRTH,
+			   ADDRESS AS M_ADDRESS,
+			   SEARCH_ME AS M_SEARCH_ME,
+			   GENDER AS M_GENDER,
+			   MINIMI AS M_MINIMI,
+			   CREATE_DATE AS M_CREATE_DATE,
+			   ACORN AS M_ACORN,
+			   STATUS AS M_STATUS
+		FROM MINIHOME H
+		INNER JOIN MEMBER M ON (H.USER_NO = M.USER_NO)
+		WHERE M.USER_NO = #{userNo}
+	</select>
+	
+	<select id="getAcorn" resultType="_int">
+		SELECT ACORN
+		FROM MEMBER
+		WHERE USER_NO = #{userNo}
+	</select>
+	
+</mapper>

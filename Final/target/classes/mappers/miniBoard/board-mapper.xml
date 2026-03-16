@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper 
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+	
+<mapper namespace="com.kh.world.miniBoard.model.mapper.BoardMapper">
+	<sql id="boardListSql">
+		SELECT  B_NO,
+				M.USER_ID,
+				FOLDER_NO,
+				B_TITLE,
+				B_CONTENT,
+				B_STATUS,
+				B_CDATE,
+				B_MDATE,
+				B_ONAME, 
+				B_RNAME, 
+				B_READCOUNT, 
+				REPORT_CODE
+		FROM BOARD B 
+		JOIN MEMBER M ON(B.USER_NO = M.USER_NO) 
+		WHERE B_STATUS = 'Y'  
+	</sql>
+	<sql id="replyListSql">
+		SELECT  R_NO,
+				B_NO,
+				USER_ID,
+				R_CONTENT,
+				R_CDATE,
+				R_MDATE,
+				R_STATUS
+		FROM BOARD_REPLY R
+		JOIN MEMBER M ON(R.USER_NO = M.USER_NO) 
+		WHERE R_STATUS = 'Y'
+	</sql>
+	
+	<resultMap id="boardListResultMap" type="Board">
+		<id property="no" column="B_NO"/>
+		<result property="title" column="B_TITLE"/>
+		<result property="writerId" column="USER_ID"/>
+		<result property="originalFileName" column="B_ONAME"/>
+		<result property="renamedFileName" column="B_RNAME"/>
+		<result property="readCount" column="B_READCOUNT"/>
+		<result property="createDate" column="B_CDATE"/>
+	</resultMap>
+	
+	
+	<resultMap id="boardDetailResultMap" type="Board" extends="boardListResultMap">
+		<result property="content" column="B_CONTENT"/>
+		<result property="type" column="TYPE"/>
+		<result property="modifyDate" column="B_MDATE"/>
+		<collection property="replies" javaType="arraylist" columnPrefix="R_" resultMap="replyResultMap"/>
+	</resultMap>
+	
+	<resultMap id="replyResultMap" type="Reply" >
+		<id property="no" column="R_NO"/>
+		<result property="boardNo" column="B_NO"/>
+		<result property="content" column="R_CONTENT"/>
+		<result property="writerId" column="USER_ID"/>
+		<result property="createDate" column="R_CDATE"/>
+		<result property="modifyDate" column="R_MDATE"/>
+		<result property="status" column="R_STATUS"/>
+	</resultMap>
+	
+	<select id="selectBoardCount" resultType="_int">
+		SELECT COUNT(*) FROM BOARD WHERE B_STATUS='Y'
+	</select>
+	
+	<select id="selectAll" resultMap="boardListResultMap">
+		<include refid="boardListSql"/> 
+		ORDER BY B_NO DESC
+	</select>
+	
+	<!-- view -->
+	<select id="selectBoardByNo" parameterType="_int" resultMap="boardDetailResultMap">
+		SELECT B.B_NO,
+		       B.B_TITLE, 
+		       M.USER_NO, 
+		       B.B_READCOUNT,
+		       B.B_ONAME,
+		       B.B_RNAME,
+		       B.B_CONTENT,
+		       B.B_CDATE,
+		       B.B_MDATE,
+		       R.R_NO,
+		       R.B_NO,
+		       R.R_CONTENT,
+		       M.USER_ID,
+		       R.R_CDATE,
+		       R.R_MDATE
+		FROM BOARD B
+		INNER JOIN MEMBER M ON(B.USER_NO = M.USER_NO)
+		LEFT OUTER JOIN BOARD_REPLY R ON(B.B_NO = R.B_NO)
+		LEFT OUTER JOIN MEMBER M2 ON(R.USER_NO = M2.USER_NO)
+		WHERE B.B_STATUS = 'Y' AND B.B_NO = #{no}
+	</select>
+	
+	<!-- 게시글 등록 -->
+	<insert id="insertBoard" parameterType="Board"
+			useGeneratedKeys="true" keyProperty="no" keyColumn="B_NO">
+		INSERT INTO BOARD (
+			B_NO,
+			USER_NO,
+			B_TITLE,
+			B_CONTENT,
+			B_ONAME,
+			B_RNAME
+		)
+		VALUES(
+			(select nextval('BOARD_SEQ') from dual),
+			#{writerNo},
+			#{title},
+			#{content},
+			#{originalFileName},
+			#{renamedFileName}
+		)
+	</insert>
+	
+	<!-- 게시글 수정 -->
+	<update id="updateBoard" parameterType="Board">
+		
+		   UPDATE BOARD 
+		   <trim prefix="SET" suffixOverrides=",">
+		 		<if test="title != null">
+		  			B_TITLE = #{title},
+		  		</if>
+		  		<if test="content != null">
+		  			B_CONTENT = #{content},
+		  		</if>
+		  		<if test="originalFileName != null">
+		  			B_ONAME = #{originalFileName},
+		  		</if>
+		  		<if test="renamedFileName != null">
+		  			B_RNAME = #{renamedFileName},
+		  		</if>
+		  		B_MDATE = DEFAULT
+		   </trim>
+		   WHERE B_NO = #{no}
+	</update>
+	
+	<!-- 게시글 삭제 -->
+	<update id="updateStatus" parameterType="map">
+		UPDATE BOARD SET B_STATUS = #{status} WHERE B_NO = #{no}
+	</update>
+	
+	<!-- 게시글 조회수 -->
+	<update id="updateReadCount" parameterType="map">
+		UPDATE BOARD SET B_READCOUNT = B_READCOUNT + 1 WHERE B_NO = #{no}
+	</update>
+	
+	<!-- 댓글 -->
+	<insert id="insertReply" parameterType="Reply">
+		INSERT INTO BOARD_REPLY (
+			R_NO,
+			B_NO,
+			USER_NO,
+			R_CONTENT
+		)
+		VALUES(
+			(select nextval('BOARD_R_SEQ') from dual),
+			#{boardNo},
+			#{writerNo},
+			#{content}
+		)
+	</insert>
+	
+	<select id="findReplyByNo" parameterType="_int" resultMap="replyResultMap">
+		<include refid="replyListSql" />
+		AND B_NO = #{no}
+		ORDER BY R_NO DESC
+		LIMIT 3
+	</select>
+	 
+	<!--
+	<select id="findReplyByNo" resultMap="visitorReplyResultMap">
+		SELECT VRE_NO,
+			   V_NO,
+			   VRE_WRITER_NO,
+			   VRE_CREATE_DATE	,
+			   VRE_MODIFY_DATE ,
+			   VRE_CONTENT ,
+			   VRE_SECRET ,
+			   VRE_ACCESS ,
+			   VRE_STATUS ,
+			   VRE_DEPTH ,
+			   VRE_GROUP ,
+			   VRE_STEP 
+		FROM VISITOR_REFLY
+		WHERE VRE_NO = #{vreNo}
+	</select>
+	댓글 수정
+	<update id="updateReply">
+		UPDATE VISITOR_REFLY 
+		SET
+			VRE_CONTENT = #{content},
+			VRE_MODIFY_DATE = NOW()
+		WHERE VRE_NO = #{vreNo} AND V_NO = #{visitorNo} AND VRE_WRITER_NO = #{userNo}
+	</update>
+	<update id="deleteReply">
+		UPDATE VISITOR_REFLY 
+		SET
+			VRE_STATUS = #{status}
+		WHERE VRE_NO = #{vreNo} AND VRE_WRITER_NO = #{userNo}
+	</update>
+	 -->
+</mapper>

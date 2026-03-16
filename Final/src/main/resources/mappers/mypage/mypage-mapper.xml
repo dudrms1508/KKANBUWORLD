@@ -1,0 +1,411 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.kh.world.mypage.model.mapper.MypageMapper">
+	<resultMap id="memberResultMap" type="Member">
+		<id property="no" column="USER_NO"/>
+		<result property="id" column="USER_ID"/>
+		<result property="password" column="USER_PWD"/>
+		<result property="name" column="NAME"/>
+		<result property="role" column="ROLE"/>
+		<result property="phone" column="PHONE"/>
+		<result property="email" column="EMAIL"/>
+		<result property="birth" column="BIRTH"/>
+		<result property="address" column="ADDRESS"/>
+		<result property="searchMe" column="SEARCH_ME"/>
+		<result property="gender" column="GENDER"/>
+		<result property="minimi" column="MINIMI"/>
+		<result property="createDate" column="CREATE_DATE"/>
+		<result property="acorn" column="ACORN"/>
+		<result property="status" column="STATUS"/>
+	</resultMap>
+		
+	<resultMap id="cartResultMap" type="Cart" >
+		<result property="userNo" column="USER_NO" />
+		<!-- 동일한 회원 no에 여러 개의 상품 코드가 담길 수 있어서 arraylist로 필드를 만들어 생성 -->
+		<association property="product" javaType="arraylist" columnPrefix="P_"
+			resultMap="cartProductResultMap" />	
+	</resultMap>
+	
+	<resultMap id="cartProductResultMap" type="CartProduct">
+		<result property="code" column="PRODUCT_CODE" />
+		<result property="categoryCode" column="CATEGORY_CODE" />
+		<result property="name" column="PRODUCT_NAME" />
+		<result property="price" column="PRODUCT_PRICE" />
+		<result property="date" column="PRODUCT_DATE" />
+		<result property="status" column="STATUS" />
+		<result property="file" column="PRODUCT_FILE" />
+		<result property="url" column="PRODUCT_URL" />
+	</resultMap>
+	
+	<resultMap id="buyHistoryResultMap" type="BuyHistory" >
+		<id property="buyNo" column="BUY_IDX" />
+		<result property="userNo" column="USER_NO" />
+		<result property="date" column="PAY_DATE" />
+		<association property="product" javaType="CartProduct" columnPrefix="P_"
+			resultMap="cartProductResultMap"/>
+	</resultMap>
+	
+	
+	<!-- 문의내역 resultMap -->
+	<resultMap id="qnaHistoryResultMap" type="QnaHistory">
+		<result property="no" column="QNA_NO"/>
+		<result property="userNo" column="USER_NO"/>
+		<result property="title" column="QNA_TITLE"/>
+		<result property="email" column="QNA_EMAIL"/>
+		<result property="categoryCode" column="QNA_CATEGORY_CODE"/>
+		<result property="categoryName" column="QNA_CATEGORY_NAME" /> 
+		<result property="content" column="QNA_CONTENT"/>
+		<result property="q_Date" column="QNA_Q_DATE"/>
+		<result property="answer" column="QNA_ANSWER"/>
+		<result property="status" column="QNA_STATUS"/>
+		<result property="a_Date" column="QNA_A_DATE"/>
+	</resultMap>
+	
+	<!-- 신고내역 resultMap -->
+	<resultMap id="reportHistoryResultMap" type="ReportHistory">
+		<id property="no" column="REPORT_NO" />
+		<result property="categoryCode" column="CATEGORYCODE"/>
+		<result property="categoryName" column="CATEGORYNAME"/>
+		<result property="content" column="CONTENT" />
+		<result property="date" column="DATE" />
+		<result property="status" column="STATUS" />
+		<result property="result" column="RESULT" />
+		<result property="allpkNo" column="ALLPK_NO" />
+		<result property="reportCode" column="REPORT_CODE" />
+		<association property="member" javaType="Member" columnPrefix="M_" 
+				resultMap="com.kh.world.member.model.mapper.MemberMapper.memberResultMap" />
+	</resultMap>
+	
+	
+	<resultMap id="minihomeTodayResultMap" type="MinihomeToday" >
+		<result property="minihomeNo" column="MINIHOME_NO" />
+		<result property="today" column="T_COUNT" />
+		<result property="total" column="T_TOTAL" />
+		<result property="date" column="T_DATE" />
+	</resultMap>
+	
+	
+	<!-- 회원정보 변경 -->
+	<update id="updateInfo" parameterType="map">
+		UPDATE MEMBER
+		SET
+			EMAIL = #{email},
+			PHONE = #{phone},	
+			ADDRESS = #{address},
+			SEARCH_ME = #{searchMe}
+		WHERE USER_NO = #{no}
+	
+	</update>
+	
+	
+	
+	<!-- 비밀번호 변경 -->
+	<update id="updatePassword" parameterType="map">
+		UPDATE MEMBER
+		SET 
+			USER_PWD = #{chgPwd}
+		WHERE 
+			USER_NO = #{no}
+	</update>	
+	
+
+	<select id="returnMemberById" parameterType="string" resultMap="memberResultMap">
+		SELECT USER_NO,
+			   USER_ID,
+			   USER_PWD,
+			   NAME,
+			   ROLE,
+			   PHONE,
+			   EMAIL,
+			   BIRTH,
+			   ADDRESS,
+			   SEARCH_ME,
+	   		   GENDER,
+	   		   MINIMI,
+	   	 	   CREATE_DATE,
+	   		   ACORN,
+	   	 	   STATUS
+		FROM MEMBER
+		WHERE USER_ID = #{id}
+	</select>
+	
+	<!-- 회원탈퇴 -->
+	<update id="deleteMember" parameterType="string">
+		UPDATE MEMBER
+		SET 
+			STATUS = #{status}
+		WHERE 
+			USER_ID = #{id}
+	
+	</update>
+
+	
+	
+	<!-- 회원번호로 장바구니 가져오는 쿼리문 -->
+	<select id="selectCartByNo" parameterType="_int" resultMap="cartResultMap">
+		SELECT C.USER_NO,
+			   P.PRODUCT_CODE AS "P_PRODUCT_CODE" ,
+			   P.CATEGORY_CODE AS "P_CATEGORY_CODE",
+			   P.PRODUCT_NAME AS "P_PRODUCT_NAME",
+			   P.PRODUCT_PRICE AS P_PRODUCT_PRICE,
+			   P.PRODUCT_DATE AS P_PRODUCT_DATE,
+			   P.STATUS AS P_STATUS,
+			   P.PRODUCT_FILE AS P_PRODUCT_FILE,
+			   P.PRODUCT_URL AS P_PRODUCT_URL
+		FROM CART C
+		INNER JOIN PRODUCT P ON (P.PRODUCT_CODE = C.PRODUCT_CODE)
+		WHERE USER_NO = #{no} AND P.STATUS = 'Y'
+	</select>
+	
+	
+	<!-- 상품이 장바구니에 있는지 확인 -->
+	<select id="findCartProductByNo" parameterType="_int" resultType="_int">
+		SELECT COUNT(*)
+		FROM CART
+		WHERE USER_NO = #{userNo} AND PRODUCT_CODE = #{productNo}
+	</select>
+	
+	
+	<!-- 장바구니 담기 -->
+	<insert id="insertCart" parameterType="_int">
+		INSERT INTO CART (
+		USER_NO ,
+		PRODUCT_CODE 
+		)
+		VALUES(
+		#{userNo},
+		#{productNo}
+		)
+	</insert>
+	
+	
+	<!-- 장바구니 삭제 -->
+	<delete id="deleteCart">
+		DELETE 
+		FROM CART
+		WHERE USER_NO = #{no}
+		<if test="list.size != 0">
+			AND PRODUCT_CODE IN
+			<foreach collection="list" item="code" open="(" separator="," close=")">
+				 #{code}
+			</foreach>
+		</if>
+	</delete>
+	
+	
+	<!-- 구매내역 가져오기 -->
+	<select id="selectHistoryByNo" parameterType="_int" resultMap="buyHistoryResultMap">
+		SELECT B.BUY_IDX,
+			   B.USER_NO,
+			   B.PAY_DATE,
+		   	   B.PRODUCT_CODE AS P_PRODUCT_CODE,
+		   	   P.CATEGORY_CODE AS P_CATEGORY_CODE,
+		   	   P.PRODUCT_NAME AS P_PRODUCT_NAME,
+		   	   P.PRODUCT_PRICE AS P_PRODUCT_PRICE,
+		   	   P.STATUS AS P_STATUS,
+		   	   P.PRODUCT_FILE AS P_PRODUCT_FILE,
+		   	   P.PRODUCT_URL AS P_PRODUCT_URL
+		FROM BUY B
+		INNER JOIN PRODUCT P ON (B.PRODUCT_CODE = P.PRODUCT_CODE)
+		WHERE USER_NO = #{no} AND STATUS = 'Y'
+		ORDER BY PAY_DATE DESC
+	</select>
+	
+	<!-- 구매내역 전체 건수 -->
+	<select id="countPayHistoryByNo" resultType="_int">
+		SELECT COUNT(*)
+		FROM BUY B
+		INNER JOIN PRODUCT P ON (B.PRODUCT_CODE = P.PRODUCT_CODE)
+		WHERE USER_NO = #{userNo} AND STATUS = 'Y'
+	</select>
+	
+
+	<!-- 구매내역 기간별 전체 건수 -->
+	<select id="countPayHistoryBetweenByNo" resultType="_int">
+		SELECT COUNT(*)
+		FROM BUY B
+		INNER JOIN PRODUCT P ON (B.PRODUCT_CODE = P.PRODUCT_CODE)
+		WHERE USER_NO = #{userNo} AND STATUS = 'Y'
+		AND  DATE_FORMAT(PAY_DATE, '%Y-%m-%d')  BETWEEN STR_TO_DATE(#{date1}, '%Y-%m-%d') AND STR_TO_DATE(#{date2}, '%Y-%m-%d')
+	</select>
+	
+
+	<!-- 구매내역 기간조회 -->
+	<select id="selectHistoryBetween" parameterType="map" resultMap="buyHistoryResultMap">
+		SELECT B.BUY_IDX,
+		   	   B.USER_NO,
+			   B.PAY_DATE,
+		   	   B.PRODUCT_CODE AS P_PRODUCT_CODE,
+		   	   P.CATEGORY_CODE AS P_CATEGORY_CODE,
+		   	   P.PRODUCT_NAME AS P_PRODUCT_NAME,
+		   	   P.PRODUCT_PRICE AS P_PRODUCT_PRICE,
+		   	   P.STATUS AS P_STATUS,
+		   	   P.PRODUCT_FILE AS P_PRODUCT_FILE,
+		   	   P.PRODUCT_URL AS P_PRODUCT_URL
+		FROM BUY B
+		INNER JOIN PRODUCT P ON (B.PRODUCT_CODE = P.PRODUCT_CODE)
+		WHERE USER_NO = #{no} 
+		AND STATUS = 'Y'
+		AND  DATE_FORMAT(PAY_DATE, '%Y-%m-%d')  BETWEEN STR_TO_DATE(#{date1}, '%Y-%m-%d') AND STR_TO_DATE(#{date2}, '%Y-%m-%d')
+		ORDER BY PAY_DATE DESC
+	</select>	
+	
+	<!-- 문의 내역 -->
+	<select id="findQnaAllByNo" parameterType="_int" resultMap="qnaHistoryResultMap">
+		SELECT QNA_NO,
+			   USER_NO,
+			   QNA_TITLE,
+			   QNA_EMAIL,
+			   QC.QNA_CATEGORY_CODE,
+			   QC.QNA_CATEGORY AS QNA_CATEGORY_NAME,
+			   QNA_CONTENT,
+			   QNA_Q_DATE,
+			   QNA_ANSWER,
+			   QNA_STATUS,
+			   QNA_A_DATE
+		FROM QNA Q
+		INNER JOIN QNA_CATEGORY QC ON (QC.QNA_CATEGORY_CODE = Q.QNA_CATEGORY) 
+		WHERE USER_NO = #{no}
+	</select>
+	
+	
+	<select id="countQnaAllByNo" resultType="_int">
+		SELECT COUNT(*)
+		FROM QNA
+		WHERE USER_NO = #{userNo}
+	</select>
+	
+	
+	
+	<!-- 신고내역 -->	
+	<select id="countReportByNo" resultType="_int">
+		SELECT COUNT(*)
+		FROM REPORT
+		WHERE USER_ID = #{userId}
+	</select>
+	
+	<select id="findReportHistory" resultMap="reportHistoryResultMap">
+		SELECT REPORT_NO ,
+			   R.CATEGORYCODE ,
+			   RC.CATEGORYNAME ,
+			   R.CONTENT ,
+			   R.DATE ,
+			   R.STATUS,
+			   R.RESULT ,
+			   R.ALLPK_NO ,
+			   R.REPORT_CODE ,
+			   M.USER_NO AS M_USER_NO,
+			   M.USER_ID AS M_USER_ID,
+			   M.NAME AS M_NAME
+		FROM REPORT R
+		INNER JOIN REPORT_CATEGORY RC ON (R.CATEGORYCODE  = RC.CATEGORYCODE)
+		INNER JOIN MEMBER M ON (R.USER_ID = M.USER_ID)
+		WHERE R.USER_ID = #{userId}
+	</select>
+	
+	<select id="findReportByNo" resultMap="reportHistoryResultMap">
+		SELECT REPORT_NO ,
+			   R.CATEGORYCODE ,
+			   RC.CATEGORYNAME ,
+			   R.CONTENT ,
+			   R.DATE ,
+			   R.STATUS,
+			   R.RESULT ,
+			   R.ALLPK_NO ,
+			   R.REPORT_CODE ,
+			   M.USER_NO AS M_USER_NO,
+			   M.USER_ID AS M_USER_ID,
+			   M.NAME AS M_NAME
+		FROM REPORT R
+		INNER JOIN REPORT_CATEGORY RC ON (R.CATEGORYCODE  = RC.CATEGORYCODE)
+		INNER JOIN MEMBER M ON (R.USER_ID = M.USER_ID)
+		WHERE R.USER_ID = #{userId} AND REPORT_NO = #{reportNo}
+	</select>
+	
+	<select id="findQnaByNo" resultMap="qnaHistoryResultMap">
+		SELECT QNA_NO,
+			   USER_NO,
+			   QNA_TITLE,
+			   QNA_EMAIL,
+			   QC.QNA_CATEGORY_CODE,
+			   QC.QNA_CATEGORY AS QNA_CATEGORY_NAME,
+			   QNA_CONTENT,
+			   QNA_Q_DATE,
+			   QNA_ANSWER,
+			   QNA_STATUS,
+			   QNA_A_DATE
+		FROM QNA Q
+		INNER JOIN QNA_CATEGORY QC ON (QC.QNA_CATEGORY_CODE = Q.QNA_CATEGORY) 
+		WHERE USER_NO = #{userNo} AND QNA_NO = #{qnaNo}
+	</select>
+	
+	
+	<select id="findMyItemByCode" resultType="_int">
+		SELECT COUNT(*)
+		FROM MyItem
+		WHERE USER_NO = #{userNo}
+		<if test="productCode.length != 0">
+			AND PRODCUT_CODE  IN 
+			<foreach collection="productCode" item="code" open="(" separator="," close=")">
+				#{code}
+			</foreach>
+		</if>
+	</select>
+	
+	<delete id="cartDeleteAfterBuy">
+		DELETE 
+		FROM CART
+		WHERE USER_NO = #{no}
+		<if test="productCode.length != 0">
+			AND PRODUCT_CODE IN
+			<foreach collection="productCode" item="code" open="(" separator="," close=")">
+				 #{code}
+			</foreach>
+		</if>
+	</delete>
+	
+	<insert id="insertMyItemByCodes">
+		INSERT INTO MyItem (
+		USER_NO ,
+		PRODCUT_CODE 
+		)
+		VALUES
+		<foreach collection="productCode" item="code" separator=",">
+		(
+		#{userNo},
+		#{code}
+		)
+		</foreach>
+	</insert>
+	
+	<!-- 구매내역 테이블에 이력 넣기 -->
+	<insert id="insertBuyHistoryByNo">
+		INSERT INTO BUY (
+		BUY_IDX,
+		PRODUCT_CODE, 
+		USER_NO
+		)
+		VALUES
+		<foreach collection="productCode" item="code" separator=",">
+		(
+		(SELECT NEXTVAL('buy_seq') FROM DUAL),
+		#{code},
+		#{userNo}
+		)
+		</foreach>
+	</insert>
+	
+	
+	<!-- 투데이 토탈 가져오기 -->
+	<select id="findTodayByMinihomeNo" resultMap="minihomeTodayResultMap">
+		SELECT MAX(T_DATE) AS T_DATE,
+			   MINIHOME_NO ,
+			   T_COUNT ,
+			   T_TOTAL 
+		FROM MINIHOME_TOTAL
+		WHERE MINIHOME_NO = #{minihomeNo}
+		AND DATE_FORMAT(T_DATE, '%Y-%m-%d') = DATE_FORMAT(NOW(), '%Y-%m-%d')
+	</select>
+
+</mapper>

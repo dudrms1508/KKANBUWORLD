@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.helloworld.noticeReplyMapper">
+
+  
+  <insert id="insert">
+  	insert into ${notice_reply}(${col_nt_bno}, ${col_nt_userid}, ${col_nt_username}, ${col_nt_reply_content})
+  	values(#{nt_bno}, #{userid}, #{user_name}, #{nt_reply_content})
+  </insert>
+
+  <select id="select" resultType="NoticeReplyVO">
+	select * from ${notice_reply} where ${col_nt_bno} = #{nt_bno} order by ${col_nt_rno} asc
+  </select>
+  
+  <update id="update">
+  	update ${notice_reply}
+  	set ${col_nt_reply_content} = #{nt_reply_content}
+  	where ${col_nt_rno} = #{nt_rno}
+  </update>
+  
+  <delete id="delete_one">
+  	delete from ${notice_reply}
+  	where ${col_nt_rno} = #{nt_rno}
+  </delete>
+  
+  <delete id="delete_all">
+  	delete from ${notice_reply}
+  	where ${col_nt_bno} = #{nt_bno}
+  </delete>
+
+
+
+
+
+
+
+</mapper>

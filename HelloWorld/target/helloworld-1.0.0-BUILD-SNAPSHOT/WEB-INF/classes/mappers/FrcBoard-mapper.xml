@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.helloworld.FrcBoardMapper">
+  <select id="select_all" resultType="FrcBoardVO">
+        select * from ${frc_board} order by ${col_frc_bno} desc
+        <!-- mybatis-config.xml 에 작성한 name -->
+  </select>
+  <!-- 
+  resultType : select를 했을 때 레코드 하나의 타입
+  - 원래는 패키지 이름을 포함한 전체 경로의 클래스 이름을 사용해야 함
+  - mybatis-config.xml 에서 typeAliases 속성을 package로
+    정의 했기 때문에 클래스 이름만 사용할 수 있음
+   -->
+  
+  <select id="select_by_bno" resultType="FrcBoardVO">
+    select * from ${frc_board}
+    where ${col_frc_bno} = #{frc_bno}
+  </select>
+  <!-- #{} : SpEL(스프링에서 사용하는 Expression Language) -->
+   
+   <!-- 검색기능 쿼리 추가한것 -->
+  <select id="select_by_userid" resultType="FrcBoardVO">
+    select * from ${frc_board}
+    where ${col_userid} like #{userid}
+  </select>
+   <!-- 검색기능 쿼리 추가한것 -->
+  <select id="select_by_reply_content" resultType="FrcBoardVO">
+    select * from ${frc_board}
+    where ${col_frc_bno} like #{keyword} or
+      ${col_frc_content} like #{keyword}
+      order by ${col_frc_bno} desc
+  </select>
+  
+  <insert id="insert">
+    insert into ${frc_board}(${col_nickname}, ${col_userid}, ${col_user_name}, 
+    ${col_frc_content}, ${col_home_id})
+    values(#{nickname}, #{userid}, #{user_name}, #{frc_content}, #{home_id})
+  </insert>
+   
+  <update id="update">
+    update ${frc_board}
+    set ${col_frc_content} = #{frc_content}
+    where ${col_frc_bno} = #{frc_bno}
+  </update>
+  
+  <delete id="delete">
+    delete from ${frc_board}
+    where ${col_frc_bno} = #{frc_bno}
+  </delete>
+   
+   <select id="total_count" resultType="Integer">
+    select count(*) total_cnt from ${frc_board}
+   </select>
+   
+   <!-- 페이징 처리 -->
+   <!-- select 타입은 resultType가 무조건 있어야함 -->
+   <select id="paging" resultType="FrcBoardVO">
+    select
+      frc_bno, nickname, frc_content, userid, frc_date, user_name
+      from (
+        select rownum rn, a.*
+        from (
+          select * from ${frc_board} order by ${col_frc_bno} desc
+        ) a
+      ) b
+      where rn between #{start} and #{end}
+   </select>
+   <update id="update_replycnt">
+    update ${frc_board}
+    set ${col_replycnt} = ${col_replycnt} + #{replycnt}
+    where ${col_frc_bno} = #{frc_bno}
+   </update>
+ 
+   
+</mapper>

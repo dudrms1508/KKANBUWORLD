@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.kh.world.notice.model.mapper.NoticeMapper">
+
+	<sql id="noticeSql">
+		SELECT NOTICE_NO,
+				USER_NO,
+				NOTICE_TITLE,
+				NOTICE_CONTENT,
+				NOTICE_DATE,
+				NOTICE_VIEW,
+				NOTICE_STATUS
+		FROM NOTICE
+	</sql>
+	
+	
+	<resultMap id="noticeResultMap" type="NOTICE">
+		<result property="no" column="NOTICE_NO"/>
+		<result property="userNo" column="USER_NO"/>
+		<result property="title" column="NOTICE_TITLE"/>
+		<result property="content" column="NOTICE_CONTENT"/>
+		<result property="date" column="NOTICE_DATE"/>
+		<result property="view" column="NOTICE_VIEW"/>
+		<result property="status" column="NOTICE_STATUS"/>
+	</resultMap>
+	
+	<resultMap id="noticeRownumResultMap" type="NOTICE">
+		<result property="no" column="NOTICE_NO"/>
+		<result property="userNo" column="USER_NO"/>
+		<result property="title" column="NOTICE_TITLE"/>
+		<result property="content" column="NOTICE_CONTENT"/>
+		<result property="date" column="NOTICE_DATE"/>
+		<result property="view" column="NOTICE_VIEW"/>
+		<result property="status" column="NOTICE_STATUS"/>
+		<result property="rownum" column="NOTICE_ROWNUM"/>
+	</resultMap>
+	
+	<resultMap id="memberResultMap" type="Member">
+		<id property="no" column="USER_NO"/>
+		
+		<result property="id" column="USER_ID"/>
+		<result property="password" column="USER_PWD"/>
+		<result property="name" column="NAME"/>
+		<result property="role" column="ROLE"/>
+		<result property="phone" column="PHONE"/>
+		<result property="email" column="EMAIL"/>
+		<result property="birth" column="BIRTH"/>
+		<result property="address" column="ADDRESS"/>
+		<result property="searchMe" column="SEARCH_ME"/>
+		<result property="gender" column="GENDER"/>
+		<result property="minimi" column="MINIMI"/>
+		<result property="createDate" column="CREATE_DATE"/>
+		<result property="acorn" column="ACORN"/>
+		<result property="status" column="STATUS"/>
+	</resultMap>
+	
+	<select id="selectAll" resultMap="noticeResultMap">
+		
+		<include refid="noticeSql"/>
+	</select>
+	
+	<select id="selectNoticeCount" parameterType="String" resultType="_int" >
+		SELECT COUNT(*) 
+		FROM NOTICE 
+		WHERE NOTICE_STATUS = 'Y' 
+		<if test="type != null">
+			<choose>
+				<when test='type.equals("T")'>
+					AND NOTICE_TITLE LIKE concat('%',#{keyword},'%' )
+				</when>
+				<when test='type.equals("C")'>
+					AND NOTICE_CONTENT LIKE concat('%',#{keyword},'%' )
+				</when>
+				<when test='type.equals("B")'>
+					AND NOTICE_TITLE LIKE concat('%', #{keyword},'%' ) OR NOTICE_CONTENT LIKE concat('%', #{keyword},'%' )
+				</when>
+			</choose>
+		</if>
+	</select>
+
+	<!-- 
+	<select id="selectListAll" resultMap="noticeRownumResultMap"> 
+		SELECT NOTICE_ROWNUM, NOTICE_NO, USER_ID, NOTICE_TITLE, NOTICE_CONTENT, NOTICE_DATE, NOTICE_VIEW,NOTICE_STATUS
+		FROM (SELECT ROW_NUMBER() OVER(ORDER BY NOTICE_DATE DESC) NOTICE_ROWNUM,
+						N.NOTICE_NO,
+						M.USER_ID,
+						N.NOTICE_TITLE,
+						N.NOTICE_CONTENT,
+						N.NOTICE_DATE,
+						N.NOTICE_VIEW,
+						N.NOTICE_STATUS
+					FROM NOTICE N
+					JOIN MEMBER M ON(N.USER_NO = M.USER_NO) 
+					WHERE N.NOTICE_STATUS = 'Y'
+			) A
+		ORDER BY NOTICE_NO DESC
+	</select>
+	 -->
+	<select id="selectListAll" resultMap="noticeRownumResultMap"> 
+		SELECT NOTICE_NO, USER_NO, NOTICE_TITLE, NOTICE_CONTENT, NOTICE_DATE, NOTICE_VIEW,NOTICE_STATUS
+		FROM NOTICE
+		WHERE NOTICE_STATUS = 'Y'
+		ORDER BY NOTICE_NO DESC
+	</select>
+	<!-- 
+	<select id="search" parameterType="map" resultMap="noticeRownumResultMap">
+		SELECT NOTICE_ROWNUM, NOTICE_NO, USER_ID, NOTICE_TITLE, NOTICE_CONTENT, NOTICE_DATE, NOTICE_VIEW,NOTICE_STATUS
+		FROM (SELECT ROW_NUMBER() OVER(ORDER BY NOTICE_DATE DESC) NOTICE_ROWNUM,
+						N.NOTICE_NO,
+						M.USER_ID,
+						N.NOTICE_TITLE,
+						N.NOTICE_CONTENT,
+						N.NOTICE_DATE,
+						N.NOTICE_VIEW,
+						N.NOTICE_STATUS
+					FROM NOTICE N
+					JOIN MEMBER M ON(N.USER_NO = M.USER_NO)
+			) A
+		WHERE NOTICE_STATUS = 'Y' 
+		<if test="type != null">
+			<choose>
+				<when test='type.equals("T")'>
+					AND NOTICE_TITLE LIKE concat('%',#{keyword},'%' )
+				</when>
+				<when test='type.equals("C")'>
+					AND NOTICE_CONTENT LIKE concat('%',#{keyword},'%' )
+				</when>
+				<when test='type.equals("B")'>
+					AND NOTICE_TITLE LIKE concat('%', #{keyword},'%' ) OR NOTICE_CONTENT LIKE concat('%', #{keyword},'%' )
+				</when>
+			</choose>
+			ORDER BY NOTICE_NO DESC
+		</if>
+	</select>
+	 -->
+	<select id="search" parameterType="map" resultMap="noticeRownumResultMap">
+		SELECT NOTICE_NO, USER_NO, NOTICE_TITLE, NOTICE_CONTENT, NOTICE_DATE, NOTICE_VIEW,NOTICE_STATUS
+		FROM NOTICE
+		WHERE NOTICE_STATUS = 'Y' 
+		<if test="type != null">
+			<choose>
+				<when test='type.equals("T")'>
+					AND NOTICE_TITLE LIKE concat('%',#{keyword},'%' )
+				</when>
+				<when test='type.equals("C")'>
+					AND NOTICE_CONTENT LIKE concat('%',#{keyword},'%' )
+				</when>
+				<when test='type.equals("B")'>
+					AND NOTICE_TITLE LIKE concat('%', #{keyword},'%' ) OR NOTICE_CONTENT LIKE concat('%', #{keyword},'%' )
+				</when>
+			</choose>
+			ORDER BY NOTICE_NO DESC
+		</if>
+	</select>
+	
+	
+	<insert id="insertNotice" parameterType="map"
+				useGeneratedKeys="true" keyColumn="NOTICE_NO" keyProperty="no">
+		INSERT INTO NOTICE ( NOTICE_NO,
+					USER_NO,
+					NOTICE_TITLE,
+					NOTICE_CONTENT,
+					NOTICE_DATE,
+					NOTICE_VIEW,
+					NOTICE_STATUS)
+			VALUES((SELECT NEXTVAL('notice_seq') FROM DUAL),
+					#{loginMember.no},
+					#{notice.title},
+					#{notice.content},
+					DEFAULT,
+					DEFAULT,
+					DEFAULT
+					)
+	</insert>
+	
+	<select id="isAdmin" parameterType="_int" resultType="_int">
+		SELECT COUNT(*)
+		FROM MEMBER 
+		WHERE ROLE  ='Y' AND USER_NO = #{no}
+	</select>
+	
+	
+	<update id="updateNotice" parameterType="map">
+		UPDATE 	NOTICE 
+		SET		NOTICE_TITLE = #{notice.title}, NOTICE_CONTENT = #{notice.content}, NOTICE_DATE = DEFAULT 
+		WHERE	NOTICE_NO = #{notice.no}
+	</update>
+	
+	<select id="selectNoticeByNo" parameterType="_int" resultMap="noticeResultMap">
+		SELECT 	*
+		FROM 	NOTICE 
+		WHERE 	NOTICE_NO = #{no}
+		
+	</select>
+	
+	<!-- no값을 받아서 해당하는 notice 가져다 줌 -->
+	<select id="selectNoticeByRownum" parameterType="_int" resultMap="noticeRownumResultMap">
+		SELECT NOTICE_ROWNUM, NOTICE_NO, NOTICE_TITLE, NOTICE_CONTENT, NOTICE_DATE
+		FROM (SELECT ROW_NUMBER() OVER(ORDER BY NOTICE_NO DESC) NOTICE_ROWNUM,
+						NOTICE_NO,
+						NOTICE_TITLE,
+						NOTICE_CONTENT,
+						NOTICE_DATE
+					FROM NOTICE
+					WHERE NOTICE_STATUS = 'Y'
+			) A
+		WHERE NOTICE_NO = #{no}
+	</select>
+	
+	
+	<select id="selectNoticeRownum" parameterType="_int" resultMap="noticeRownumResultMap">
+		SELECT NOTICE_ROWNUM, NOTICE_NO, NOTICE_TITLE, NOTICE_CONTENT, NOTICE_DATE
+		FROM (SELECT ROW_NUMBER() OVER(ORDER BY NOTICE_NO DESC) NOTICE_ROWNUM,
+						NOTICE_NO,
+						NOTICE_TITLE,
+						NOTICE_CONTENT,
+						NOTICE_DATE
+					FROM NOTICE
+					WHERE NOTICE_STATUS = 'Y'
+			) A
+		WHERE NOTICE_ROWNUM = #{no}
+	</select>
+	
+	
+	<update id="deleteNotice">
+		UPDATE NOTICE 
+		SET NOTICE_STATUS ='N'
+		WHERE  NOTICE_NO = #{no}
+	</update>
+	
+	
+</mapper>
